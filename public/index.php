@@ -22,51 +22,52 @@ include_once "../src/includes/bloqueio.php";
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus nobis culpa delectus pariatur vitae dolorum reprehenderit corrupti dicta unde modi.
         </p>
         <div>
-            <a href="">
+            <a href="partes/visualizar.php?id=1">
                 <div>
                     <h2>Parte 1</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=2">
                 <div>
                     <h2>Parte 2</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=3">
                 <div>
                     <h2>Parte 3</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=4">
                 <div>
                     <h2>Parte 4</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=5">
                 <div>
                     <h2>Parte 5</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=6">
                 <div>
                     <h2>Parte 6</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=7">
                 <div>
                     <h2>Parte 7</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=8">
                 <div>
                     <h2>Parte 8</h2>
                 </div>
             </a>
-            <a href="">
+            <a href="partes/visualizar.php?id=9">
                 <div>
                     <h2>Parte 9</h2>
                 </div>
             </a>
+            <a href="logout.php">Logout</a>
         </div>
     </main>
     
