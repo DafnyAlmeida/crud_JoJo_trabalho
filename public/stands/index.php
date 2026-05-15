@@ -50,7 +50,7 @@ $stands = $stmt->fetchAll(PDO::FETCH_OBJ);
 </head>
 <body>
     <header>
-        <a href="adicionar.php">
+        <a href="adicionar.php?parte_id=<?= $parte_id ?>">
             Adicionar novo stand
         </a>
     </header>

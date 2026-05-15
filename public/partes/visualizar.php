@@ -1,6 +1,6 @@
 <?php
-
 require_once "../../src/config/conexao.php";
+require_once "../../src/includes/bloqueio.php";
 
 if (!isset($_GET['id'])) {
     header("Location: ../index.php?status=id_vazio");
