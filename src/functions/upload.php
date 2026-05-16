@@ -74,3 +74,12 @@ function deletar_pasta($pasta) {
 
     rmdir($pasta);
 }
+
+function deletar_arquivo($arquivo) {
+
+    $caminho = "../../" . $arquivo;
+
+    if (file_exists($caminho)) {
+        unlink($caminho);
+    }
+}

@@ -1,7 +1,6 @@
 <?php 
 include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
-require_once "../../src/functions/upload.php";
 
 if (!isset($_GET["id_stand"])) {
     header("Location: index.php?status=id_vazio");
@@ -10,11 +9,18 @@ if (!isset($_GET["id_stand"])) {
 
 $stand_id = $_GET["id_stand"];
 
+$parte_id = $_GET["parte_id"];
+if (!$parte_id) {
+    header("Location: index.php");
+    exit;
+}
+
 if (!filter_var($stand_id, FILTER_VALIDATE_INT)) {
     header("Location: index.php?status=id_invalido");
     exit;
 }
 
+// SELEÇÃO DAS INFORMAÇÕES SOBRE OS STANDS PARA PRE-PREENCHER
 $sql = "SELECT * FROM stands WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -28,6 +34,7 @@ if (!$stand) {
     exit;
 }
 
+// SELEÇÃO DOS PERSONAGENS PARA PRE-PREENCHER
 $sql = "SELECT DISTINCT p.id, p.nome 
         FROM personagens p 
         INNER JOIN personagens_partes pp ON p.id = pp.personagem_id 
@@ -43,13 +50,14 @@ $stmt->execute([
 
 $personagens = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-
+// SELEÇÃO DAS HABILIDADES PARA PRE-PREENCHER
 $sql = "SELECT * FROM stand_habilidades WHERE stand_id = :stand_id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ":stand_id" => $stand_id
 ]);
 $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
+
 ?>
 
 <!DOCTYPE html>
@@ -57,11 +65,15 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Editar Stand</title>
 </head>
 <body>
     <main>
-        <form action="processar_editar.php" method="post" class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
+        <form action="processar_editar.php" method="post" class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6" enctype="multipart/form-data">
+
+            <input type="hidden" name="id_stand" value="<?= $stand->id ?>">
+            <input type="hidden" name="parte_id" value="<?= $parte_id ?>">
         <!-- ETAPA 1 -->
             <div class="etapa" id="etapa1">
                 <h2 class="text-2xl font-bold mb-4">Informações Gerais</h2>
@@ -134,7 +146,63 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
                     + Adicionar habilidade
                 </button>
 
-                <div id="habilidades" class="space-y-4"></div>
+                <div id="habilidades" class="space-y-4">
+
+                    <?php foreach ($habilidades as $index => $habilidade): ?>
+                        <div class="habilidade-item border rounded-xl p-4 bg-gray-50 shadow space-y-3">
+
+                            <h3 class="text-lg font-bold">
+                                Habilidade <?= $index + 1 ?>
+                            </h3>
+
+                            <button type="button" onclick="removerHabilidade(this)">
+                                Remover
+                            </button>
+
+                            <label for="nome">Nome da habilidade</label>
+                            <input 
+                                type="text" 
+                                name="habilidade_nome[]" 
+                                id="nome" value="<?= htmlspecialchars($habilidade->nome) ?>" 
+                            >
+
+                            <label for="descricao">Descrição da habilidade</label>
+
+                            <textarea name="habilidade_descricao[]" id="descricao"><?= htmlspecialchars($habilidade->descricao) ?></textarea>
+
+                            <label for="imagem">Imagem da habilidade</label>
+
+                            <?php if (!empty($habilidade->imagem)): ?>
+                                <img src="../<?= $habilidade->imagem ?>" width="100">
+                            <?php endif; ?>
+
+                            <input type="hidden" name="habilidade_imagem_antiga[]" value="<?= $habilidade->imagem ?>">
+                            <input type="file" name="habilidade_imagem[]" id="imagem">
+
+                            <label for="forca">Diagrama de força</label>
+
+                            <?php if (!empty($habilidade->forca)): ?>
+                                <img src="../<?= $habilidade->forca ?>" width="100">
+                            <?php endif; ?>
+
+                            <input type="hidden" name="habilidade_diagrama_antigo[]" value="<?= $habilidade->forca ?>">
+                            <input type="file" name="habilidade_diagrama_imagem[]" id="forca">
+
+                            <select name="habilidade_tipo[]">
+                                <option value="Stands de Curto Alcance" <?= $habilidade->tipo == "Stands de Curto Alcance" ? "selected" : "" ?>>
+                                    Stands de Curto Alcance
+                                </option>
+                                <option value="Stands de Longa Distancia" <?= $habilidade->tipo == "Stands de Longa Distancia" ? "selected" : "" ?>>
+                                    Stands de Longa Distancia
+                                </option>
+                                <option value="Stands Automáticos" <?= $habilidade->tipo == "Stands Automáticos" ? "selected" : "" ?>>
+                                    Stands Automáticos
+                                </option>
+                            </select>
+                        </div>
+                    <?php endforeach; ?>
+
+                </div>
 
                 <div class="flex justify-between mt-6">
                     <button type="button" onclick="voltarEtapa(3)" class="bg-gray-500 text-white px-4 py-2 rounded-lg">
@@ -146,174 +214,16 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
                     </button>
                 </div>
             </div>
-
         </form>
     </main>
 
     <script>
-    let contadorHabilidades = 0;
+        const habilidadesIniciais = <?= count($habilidades) ?>;
+    </script>
 
-    function proximaEtapa(etapaAtual) {
+    <script src="../assets/js/adicionar_habilidade.js"></script>
 
-        const etapa = document.getElementById(
-            "etapa" + etapaAtual
-        );
-
-        const campos = etapa.querySelectorAll(
-            "input, textarea, select"
-        );
-
-        let formularioValido = true;
-
-        campos.forEach((campo) => {
-
-            campo.classList.remove(
-                "border-red-500"
-            );
-
-            if (
-                campo.hasAttribute("required") &&
-                !campo.value.trim()
-            ) {
-
-                formularioValido = false;
-
-                campo.classList.add(
-                    "border-red-500"
-                );
-            }
-        });
-
-        if (!formularioValido) {
-
-            alert(
-                "Preencha todos os campos obrigatórios."
-            );
-
-            return;
-        }
-
-        etapa.classList.add("hidden");
-
-        document
-            .getElementById(
-                "etapa" + (etapaAtual + 1)
-            )
-            .classList.remove("hidden");
-    }
-
-    function voltarEtapa(etapaAtual) {
-
-        document
-            .getElementById(
-                "etapa" + etapaAtual
-            )
-            .classList.add("hidden");
-
-        document
-            .getElementById(
-                "etapa" + (etapaAtual - 1)
-            )
-            .classList.remove("hidden");
-    }
-
-    function adicionarHabilidade() {
-
-        contadorHabilidades++;
-
-        const container =
-            document.getElementById("habilidades");
-
-        const div = document.createElement("div");
-
-        div.className =
-            "border rounded-xl p-4 bg-gray-50 shadow space-y-3";
-
-        div.innerHTML = `
-            <div class="flex justify-between items-center">
-
-                <h3 class="text-lg font-bold">
-                    Habilidade ${contadorHabilidades}
-                </h3>
-
-                <button
-                    type="button"
-                    onclick="removerHabilidade(this)"
-                    class="bg-red-600 text-white px-3 py-1 rounded-lg"
-                >
-                    Remover
-                </button>
-
-            </div>
-
-            <div>
-                <label class="block mb-1">
-                    Nome da habilidade
-                </label>
-
-                <input
-                    type="text"
-                    name="habilidade_nome[]"
-                    required
-                    class="w-full border rounded-lg p-2"
-                >
-            </div>
-
-            <div>
-                <label class="block mb-1">
-                    Descrição da habilidade
-                </label>
-
-                <textarea
-                    name="habilidade_descricao[]"
-                    required
-                    class="w-full border rounded-lg p-2"
-                ></textarea>
-            </div>
-
-            <div>
-                <label class="block mb-1">
-                    Imagem da habilidade
-                </label>
-
-                <input
-                    type="file"
-                    name="habilidade_imagem[]"
-                    required
-                    class="w-full border rounded-lg p-2"
-                >
-            </div>
-
-            <div>
-                <label class="block mb-1">
-                    Diagrama de força
-                </label>
-
-                <input
-                    type="file"
-                    name="habilidade_diagrama_imagem[]"
-                    required
-                    class="w-full border rounded-lg p-2"
-                >
-            </div>
-
-            <label for="tipo">Tipo de stand</label>
-                <select name="habilidade_tipo[]" id="habilidade_tipo[]">
-                    <option value="Stands de Curto Alcance">Stands de Curto Alcance</option>
-                    <option value="Stands de Longa Distancia">Stands de Longa Distancia</option>
-                    <option value="Stands Automáticos">Stands Automáticos</option>
-                </select>
-        `;
-
-        container.appendChild(div);
-    }
-
-    function removerHabilidade(botao) {
-
-        botao.closest(".border").remove();
-
-    }
-</script>
+    <script src="../assets/js/form_etapas.js"></script>
     
 </body>
 </html>

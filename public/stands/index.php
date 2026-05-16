@@ -7,7 +7,7 @@ if (!isset($_GET["parte_id"])) {
     exit;
 }
 
-$parte_id = $_GET["parte_id"];
+$parte_id = (int) $_GET["parte_id"];
 $usuario_id = $_SESSION["usuario_id"];
 
 $sql = "
@@ -58,19 +58,22 @@ $stands = $stmt->fetchAll(PDO::FETCH_OBJ);
         <div>
             <h1>Olá</h1>
         </div>
-        <div>
-            <?php foreach ($stands as $stand): ?>
-                <a href="visualizar.php?id_stand=<?= $stand->id?>">
-                    <div>
-                        <img src="../<?= $stand->foto_anime ?>" alt="Foto: <?= $stand->nome ?>">
-                        <h2><?= $stand->nome ?></h2>
-                        <a href="editar.php?id_stand=<?= $stand->id?>">Modificar</a>
-                        <a href="excluir.php?id_stand=<?= $stand->id?>">Excluir</a>
-                    </div>
+        <?php foreach ($stands as $stand): ?>
+            <div>
+                <a href="visualizar.php?id_stand=<?= $stand->id ?>">
+                    <img src="../<?= $stand->foto_anime ?>" alt="Foto: <?= htmlspecialchars($stand->nome) ?>">
+                    <h2><?= htmlspecialchars($stand->nome) ?></h2>
                 </a>
-            <?php endforeach; ?>
-        </div>
+
+                <a href="editar.php?id_stand=<?= $stand->id ?>&parte_id=<?= $parte_id ?>">
+                    Modificar
+                </a>
+
+                <a href="excluir.php?id_stand=<?= $stand->id ?>&parte_id=<?= $parte_id ?>" onclick="return confirm('Tem certeza que deseja excluir este stand?')">
+                    Excluir
+                </a>
+            </div>
+        <?php endforeach; ?>
     </main>
-    
 </body>
 </html>
