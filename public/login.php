@@ -31,7 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         exit;
 
     } catch (Exception $e) { # Pega o erro vindo do throw new exeption
-        $erro = $e->getMessage(); # Pega a mensagem de erro e seta na variavel
+        $erro = $e->getMessage();
+        echo $erro; # Pega a mensagem de erro e seta na variavel
     } catch (PDOException $e) {
         $erro = "Erro interno, pedimos desculpa";
     };

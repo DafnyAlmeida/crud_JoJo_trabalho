@@ -49,3 +49,28 @@ function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base) {
 
     return "uploads/" . $tipo_pasta . "/" . $nome_pasta . "/" . $novo_nome;
 }
+
+
+
+function tratar_nome_pasta($nome) {
+    $nome = strtolower($nome);
+    $nome = trim($nome);
+    $nome = preg_replace('/[^a-z0-9]+/', '-', $nome);
+    $nome = trim($nome, '-');
+
+    return $nome;
+}
+
+function deletar_pasta($pasta) {
+    if (!is_dir($pasta)) {
+        return;
+    }
+
+    foreach (glob($pasta . "/*") as $arquivo) {
+        if (is_file($arquivo)) {
+            unlink($arquivo);
+        }
+    }
+
+    rmdir($pasta);
+}
