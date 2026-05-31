@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    container_name: jojo_php
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      banco:
+        condition: service_healthy
+
+  banco:
+    image: mariadb:10.11
+    container_name: jojo_banco
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: jojo_crud
+      MARIADB_USER: jojo
+      MARIADB_PASSWORD: jojo123
+    ports:
+      - "3307:3306"
+    volumes:
+      - banco_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  phpmyadmin:
+    image: phpmyadmin:5.2-apache
+    container_name: jojo_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: banco
+      PMA_PORT: 3306
+    depends_on:
+      banco:
+        condition: service_healthy
+
+volumes:
+  banco_data:

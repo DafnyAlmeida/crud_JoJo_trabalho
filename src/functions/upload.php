@@ -13,7 +13,7 @@ function salvar_imagem($campo, $tipo_pasta, $nome_base) {
 
     $nome_pasta = criar_nome_pasta($nome_base);
 
-    $pasta_destino = "../../public/uploads/" . $tipo_pasta . "/" . $nome_pasta . "/";
+    $pasta_destino = "../../uploads/" . $tipo_pasta . "/" . $nome_pasta . "/";
 
     if (!is_dir($pasta_destino)) {
         mkdir($pasta_destino, 0777, true);
@@ -34,7 +34,7 @@ function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base) {
 
     $nome_pasta = criar_nome_pasta($nome_base);
 
-    $pasta_destino = "../../public/uploads/" . $tipo_pasta . "/" . $nome_pasta . "/";
+    $pasta_destino = "../../uploads/" . $tipo_pasta . "/" . $nome_pasta . "/";
 
     if (!is_dir($pasta_destino)) {
         mkdir($pasta_destino, 0777, true);
@@ -48,17 +48,6 @@ function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base) {
     move_uploaded_file($arquivo["tmp_name"][$index], $caminho_final);
 
     return "uploads/" . $tipo_pasta . "/" . $nome_pasta . "/" . $novo_nome;
-}
-
-
-
-function tratar_nome_pasta($nome) {
-    $nome = strtolower($nome);
-    $nome = trim($nome);
-    $nome = preg_replace('/[^a-z0-9]+/', '-', $nome);
-    $nome = trim($nome, '-');
-
-    return $nome;
 }
 
 function deletar_pasta($pasta) {

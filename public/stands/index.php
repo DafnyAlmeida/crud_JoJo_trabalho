@@ -30,15 +30,12 @@ AND s.usuario_id = :usuario_id
 ";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     ":parte_id" => $parte_id,
     ":usuario_id" => $usuario_id
 ]);
-
 $stands = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-// print_r($stands);
 ?>
 
 <!DOCTYPE html>

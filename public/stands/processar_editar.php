@@ -30,15 +30,13 @@ if (!$stand) {
 }
 
 try {
-
+    // Apagando fotos antigas da tabela stand e setando novas
     $foto_anime = $stand->foto_anime;
     $foto_manga = $stand->foto_manga;
     $foto_catalogo = $stand->foto_catalogo;
 
     if (!empty($_FILES["foto_anime"]["name"])) {
-
         deletar_arquivo($stand->foto_anime);
-
         $foto_anime = salvar_imagem(
             "foto_anime",
             "stands",
@@ -47,9 +45,7 @@ try {
     }
 
     if (!empty($_FILES["foto_manga"]["name"])) {
-
         deletar_arquivo($stand->foto_manga);
-
         $foto_manga = salvar_imagem(
             "foto_manga",
             "stands",
@@ -58,9 +54,7 @@ try {
     }
 
     if (!empty($_FILES["foto_catalogo"]["name"])) {
-
         deletar_arquivo($stand->foto_catalogo);
-
         $foto_catalogo = salvar_imagem(
             "foto_catalogo",
             "stands",
@@ -68,6 +62,7 @@ try {
         );
     }
 
+    // Setando novas informações na tabela stand
     $sql = "UPDATE stands SET
         personagem_id = :personagem_id,
         nome = :nome,
@@ -94,6 +89,7 @@ try {
         ":id" => $stand_id
     ]);
 
+    // Deletando informações da tabela habilidades 
     $sql = "DELETE FROM stand_habilidades WHERE stand_id = :stand_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -101,25 +97,32 @@ try {
     ]);
 
     if (!empty($_POST["habilidade_nome"])) {
-
+        // Percorre um array de habilidades
         foreach ($_POST["habilidade_nome"] as $index => $nome_habilidade) {
 
+            // Evita salvar habilidades sem nomes
             if (empty(trim($nome_habilidade))) {
                 continue;
             }
 
+            // Pega a descrição, tipo, e as imagens antigas de cada habilidade 
             $descricao_habilidade = $_POST["habilidade_descricao"][$index] ?? "";
+
             $tipo_habilidade = $_POST["habilidade_tipo"][$index] ?? "";
 
             $imagem_habilidade = $_POST["habilidade_imagem_antiga"][$index] ?? "";
+
             $diagrama_habilidade = $_POST["habilidade_diagrama_antigo"][$index] ?? "";
 
+            // Vê se uma nova habilidade foi enviada
             if (!empty($_FILES["habilidade_imagem"]["name"][$index])) {
 
-            if (!empty($imagem_habilidade)) {
+                // Se enviou ele apaga a imagem antiga
+                if (!empty($imagem_habilidade)) {
                     deletar_arquivo($imagem_habilidade);
                 }
 
+                // E depois salva/gera um novo caminho para a nova
                 $imagem_habilidade = salvar_imagem_array(
                     "habilidade_imagem",
                     $index,
@@ -130,7 +133,7 @@ try {
 
             if (!empty($_FILES["habilidade_diagrama_imagem"]["name"][$index])) {
 
-            if (!empty($diagrama_habilidade)) {
+                if (!empty($diagrama_habilidade)) {
                     deletar_arquivo($diagrama_habilidade);
                 }
 
@@ -146,7 +149,8 @@ try {
             (stand_id, nome, descricao, imagem, forca, tipo)
             VALUES
             (:stand_id, :nome, :descricao, :imagem, :forca, :tipo)";
-
+            
+            // Seta tudo de novo
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ":stand_id" => $stand_id,

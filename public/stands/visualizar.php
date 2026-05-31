@@ -7,22 +7,17 @@ if (!isset($_GET["id_stand"])) {
 }
 
 $stand_id = $_GET["id_stand"];
-
 $sql = "SELECT * FROM stands WHERE id = :id";
-
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     ":id" => $stand_id
 ]);
-
 $stand = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$stand) {
     header("Location: ../index.php?status=id_invalido");
     exit;
 }
-// print_r($stand);
 
 ?>
 

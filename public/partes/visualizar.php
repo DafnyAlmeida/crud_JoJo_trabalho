@@ -8,22 +8,17 @@ if (!isset($_GET['id'])) {
 }
 
 $id = $_GET['id'];
-
 $sql = "SELECT * FROM partes WHERE id = :id";
-
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     ':id' => $id
 ]);
-
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$parte) {
     header("Location: ../index.php?status=id_invalido");
     exit;
 }
-// print_r($parte);
 ?>
 
 <!DOCTYPE html>

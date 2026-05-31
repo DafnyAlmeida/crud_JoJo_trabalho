@@ -1,28 +1,23 @@
 <?php 
 include_once "../../src/config/conexao.php";
 
-if (!isset($_GET["id_stand"])) {
+if (!isset($_GET["id_referencia"])) {
     header("Location: ../index.php?status=id_vazio");
     exit;
 }
 
-$stand_id = $_GET["id_stand"];
-
-$sql = "SELECT * FROM stands WHERE id = :id";
-
+$referencia_id = $_GET["id_referencia"];
+$sql = "SELECT * FROM referencias WHERE id = :id";
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
-    ":id" => $stand_id
+    ":id" => $referencia_id
 ]);
+$referencia = $stmt->fetch(PDO::FETCH_OBJ);
 
-$stand = $stmt->fetch(PDO::FETCH_OBJ);
-
-if (!$stand) {
+if (!$referencia) {
     header("Location: ../index.php?status=id_invalido");
     exit;
 }
-// print_r($stand);
 
 ?>
 
@@ -31,7 +26,7 @@ if (!$stand) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stands/Parte 4 - <?= $stand->nome ?></title>
+    <title><?= $referencia->titulo ?></title>
 </head>
 <body>
     <header>
@@ -42,14 +37,13 @@ if (!$stand) {
             <h2>Informações gerais</h2>
             <div>
                 <div>
-                    <p><?= $stand->descricao ?></p>
+                    <p><?= $referencia->descricao ?></p>
                 </div>
                 <div>
-                    <img src="../<?= $stand->foto_manga ?>" alt="">
+                    <img src="../<?= $referencia->imagem ?>" alt="">
                 </div>
             </div>
         </div>
     </main>
-    
 </body>
 </html>

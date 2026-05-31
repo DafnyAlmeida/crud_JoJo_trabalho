@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 
                 <input type="submit" value="Logar">
             </form>
-            <a href="../public/singup.php">Criar conta</a>
+            <a href="../singup.php">Criar conta</a>
         </div>
         <div>
 

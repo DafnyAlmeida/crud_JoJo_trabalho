@@ -7,38 +7,31 @@ if (!isset($_GET["parte_id"])) {
     exit;
 }
 
-$parte_id = $_GET["parte_id"];
+$parte_id = (int) $_GET["parte_id"];
 $usuario_id = $_SESSION["usuario_id"];
 
 $sql = "
 SELECT DISTINCT
-    s.id,
-    s.nome,
-    s.descricao,
-    s.foto_anime,
-    s.foto_manga
-FROM stands s
-
-INNER JOIN personagens p
-    ON s.personagem_id = p.id
+    p.id,
+    p.usuario_id,
+    p.nome,
+    p.foto_catalogo
+FROM personagens p
 
 INNER JOIN personagens_partes pp
     ON p.id = pp.personagem_id
 
 WHERE pp.parte_id = :parte_id
-AND s.usuario_id = :usuario_id
+AND p.usuario_id = :usuario_id
 ";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     ":parte_id" => $parte_id,
     ":usuario_id" => $usuario_id
 ]);
+$personagens = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-$stands = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-// print_r($stands);
 ?>
 
 <!DOCTYPE html>
@@ -46,31 +39,34 @@ $stands = $stmt->fetchAll(PDO::FETCH_OBJ);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stands</title>
+    <title>Personagem</title>
 </head>
 <body>
     <header>
-        <a href="adicionar.php">
-            Adicionar novo stand
+        <a href="adicionar.php?parte_id=<?= $parte_id ?>">
+            Adicionar novo personagem
         </a>
     </header>
     <main>
         <div>
             <h1>Olá</h1>
         </div>
-        <div>
-            <?php foreach ($stands as $stand): ?>
-                <a href="visualizar.php?id_stand=<?= $stand->id?>">
-                    <div>
-                        <img src="../<?= $stand->foto_anime ?>" alt="Foto: <?= $stand->nome ?>">
-                        <h2><?= $stand->nome ?></h2>
-                        <a href="editar.php?id_stand=<?= $stand->id?>">Modificar</a>
-                        <a href="excluir.php?id_stand=<?= $stand->id?>">Excluir</a>
-                    </div>
+        <?php foreach ($personagens as $personagem): ?>
+            <div>
+                <a href="visualizar.php?id_personagem=<?= $personagem->id ?>">
+                    <img src="../<?= $personagem->foto_catalogo ?>" alt="Foto: <?= htmlspecialchars($personagem->nome) ?>">
+                    <h2><?= htmlspecialchars($personagem->nome) ?></h2>
                 </a>
-            <?php endforeach; ?>
-        </div>
+
+                <a href="editar.php?id_personagem=<?= $personagem->id ?>&parte_id=<?= $parte_id ?>">
+                    Modificar
+                </a>
+
+                <a href="excluir.php?id_personagem=<?= $personagem->id ?>&parte_id=<?= $parte_id ?>" onclick="return confirm('Tem certeza que deseja excluir este personagem?')">
+                    Excluir
+                </a>
+            </div>
+        <?php endforeach; ?>
     </main>
-    
 </body>
 </html>
