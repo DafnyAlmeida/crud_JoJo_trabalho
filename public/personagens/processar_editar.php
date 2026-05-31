@@ -34,13 +34,13 @@ try {
     $foto_anime = $personagem->foto_anime;
     $foto_manga = $personagem->foto_manga;
     $foto_catalogo = $personagem->foto_catalogo;
-    $foto_biografia = $personagem->foto_catalogo;
+    $foto_biografia = $personagem->foto_biografia;
 
     if (!empty($_FILES["foto_anime"]["name"])) {
         deletar_arquivo($personagem->foto_anime);
         $foto_anime = salvar_imagem(
             "foto_anime",
-            "stands",
+            "personagens",
             $_POST["nome"]
         );
     }
@@ -49,7 +49,7 @@ try {
         deletar_arquivo($personagem->foto_manga);
         $foto_manga = salvar_imagem(
             "foto_manga",
-            "stands",
+            "personagens",
             $_POST["nome"]
         );
     }
@@ -67,7 +67,7 @@ try {
         deletar_arquivo($personagem->foto_biografia);
         $foto_biografia = salvar_imagem(
             "foto_biografia",
-            "stands",
+            "personagens",
             $_POST["nome"]
         );
     }

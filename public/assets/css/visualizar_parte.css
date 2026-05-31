@@ -1,0 +1,68 @@
+body {
+    background:
+        radial-gradient(circle at top left, rgba(120, 78, 191, 0.05), transparent 34%),
+        #fbf9ff;
+}
+
+.banner-parte {
+    background-image:
+        linear-gradient(90deg, rgba(66, 30, 139, 0.94) 0%, rgba(74, 39, 150, 0.78) 34%, rgba(74, 39, 150, 0.16) 68%, transparent 100%),
+        url("<?= escapar($imagens['banner']); ?>");
+    background-size: cover;
+    background-position: center right;
+}
+
+.banner-parte::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 8% 25%, rgba(255, 255, 255, 0.2) 0 2px, transparent 3px),
+        radial-gradient(circle at 13% 18%, rgba(235, 182, 246, 0.8) 0 3px, transparent 4px),
+        radial-gradient(circle at 40% 30%, rgba(255, 255, 255, 0.45) 0 2px, transparent 3px);
+    pointer-events: none;
+}
+
+.banner-parte::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background-image:
+        linear-gradient(135deg, transparent 25%, white 25%, white 27%, transparent 27%),
+        linear-gradient(45deg, transparent 25%, white 25%, white 27%, transparent 27%);
+    background-size: 75px 75px;
+    pointer-events: none;
+}
+
+.card-gerenciar {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-gerenciar:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(67, 40, 105, 0.12);
+}
+
+.card-gerenciar:hover .imagem-card {
+    transform: scale(1.04);
+}
+
+.imagem-card {
+    transition: transform 0.35s ease;
+}
+
+.sinopse-parte {
+    background:
+        radial-gradient(circle at 82% 36%, rgba(124, 74, 196, 0.09), transparent 24%),
+        linear-gradient(120deg, #ffffff 0%, #ffffff 54%, #faf6ff 100%);
+}
+
+.linha-footer {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(167, 123, 229, 0.65),
+        transparent
+    );
+}

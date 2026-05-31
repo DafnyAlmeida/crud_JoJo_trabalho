@@ -43,11 +43,8 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 try {
 
     if (!empty($stand->foto_anime)) {
-        // Apaga a pasta so stand do uploads
-        $pasta_stand =
-            "../" . dirname($stand->foto_anime);
-
-        deletar_pasta($pasta_stand);
+        // Apaga a pasta so stand do upload
+        deletar_pasta($stand->foto_anime);
     }
 
     foreach ($habilidades as $habilidade) {
@@ -55,19 +52,13 @@ try {
         // Apaga a pasta habilidades do uploads
         if (!empty($habilidade->imagem)) {
 
-            $pasta_habilidade =
-                "../" . dirname($habilidade->imagem);
-
-            deletar_pasta($pasta_habilidade);
+            deletar_pasta($habilidade->imagem);
         }
 
         // Apaga a pasta diagramas do uploads
         if (!empty($habilidade->forca)) {
 
-            $pasta_diagrama =
-                "../" . dirname($habilidade->forca);
-
-            deletar_pasta($pasta_diagrama);
+            deletar_pasta($habilidade->forca);
         }
     }
 

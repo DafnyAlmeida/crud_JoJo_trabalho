@@ -34,11 +34,8 @@ if (!$personagem) {
 
 try {
     if (!empty($personagem->foto_anime)) {
-        // Apaga a pasta so stand do uploads
-        $pasta_personagem =
-            "../" . dirname($personagem->foto_anime);
-
-        deletar_pasta($pasta_personagem);
+        
+        deletar_pasta($personagem->foto_anime);
     }
 
     $sql = "DELETE FROM personagens WHERE id = :id";

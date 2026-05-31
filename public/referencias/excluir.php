@@ -34,11 +34,8 @@ if (!$referencia) {
 
 try {
     if (!empty($referencia->imagem)) {
-        // Apaga a pasta so stand do uploads
-        $pasta_referencia =
-            "../" . dirname($referencia->imagem);
 
-        deletar_pasta($pasta_referencia);
+        deletar_pasta($referencia->imagem);
     }
 
     $sql = "DELETE FROM referencias WHERE id = :id";

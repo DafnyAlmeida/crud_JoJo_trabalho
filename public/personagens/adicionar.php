@@ -10,54 +10,114 @@ if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
     exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $nome = trim($_POST["nome"] ?? "");
+
+    if ($nome === "") {
+        die("Erro: nome do personagem não foi enviado.");
+    }
+
+    if (!isset($_POST["parte_id"]) || !filter_var($_POST["parte_id"], FILTER_VALIDATE_INT)) {
+        die("Erro: parte inválida.");
+    }
+
+    foreach (["foto_anime", "foto_manga", "foto_catalogo", "foto_biografia"] as $campoFoto) {
+        if (!isset($_FILES[$campoFoto])) {
+            die("Erro: o campo {$campoFoto} não chegou ao PHP.");
+        }
+
+        if ($_FILES[$campoFoto]["error"] !== UPLOAD_ERR_OK) {
+            die("Erro no upload de {$campoFoto}. Código: " . $_FILES[$campoFoto]["error"]);
+        }
+    }
+
     try {
+        $pdo->beginTransaction();
 
-        $foto_anime = salvar_imagem("foto_anime", "personagens", $_POST["nome"]);
-        $foto_manga = salvar_imagem("foto_manga", "personagens", $_POST["nome"]);
-        $foto_catalogo = salvar_imagem("foto_catalogo", "personagens", $_POST["nome"]);
-        $foto_biografia = salvar_imagem("foto_biografia", "personagens", $_POST["nome"]);
+        $foto_anime = salvar_imagem("foto_anime", "personagens", $nome);
+        $foto_manga = salvar_imagem("foto_manga", "personagens", $nome);
+        $foto_catalogo = salvar_imagem("foto_catalogo", "personagens", $nome);
+        $foto_biografia = salvar_imagem("foto_biografia", "personagens", $nome);
 
-        $sql = "INSERT INTO personagens
-        (usuario_id, nome, biografia, foto_anime, foto_manga, foto_catalogo, foto_biografia, infor_gerais, descricao_foto_biografia)
-        VALUES
-        (:usuario_id, :nome, :biografia, :foto_anime, :foto_manga, :foto_catalogo, :foto_biografia, :infor_gerais, :descricao_foto_biografia)";
+        $sql = "
+            INSERT INTO personagens (
+                usuario_id,
+                nome,
+                biografia,
+                foto_anime,
+                foto_manga,
+                foto_catalogo,
+                foto_biografia,
+                infor_gerais,
+                descricao_foto_biografia
+            ) VALUES (
+                :usuario_id,
+                :nome,
+                :biografia,
+                :foto_anime,
+                :foto_manga,
+                :foto_catalogo,
+                :foto_biografia,
+                :infor_gerais,
+                :descricao_foto_biografia
+            )
+        ";
 
         $stmt = $pdo->prepare($sql);
 
         $stmt->execute([
             ":usuario_id" => $_SESSION["usuario_id"],
-            ":nome" => $_POST["nome"],
-            ":biografia" => $_POST["biografia"],
+            ":nome" => $nome,
+            ":biografia" => trim($_POST["biografia"] ?? ""),
             ":foto_anime" => $foto_anime,
             ":foto_manga" => $foto_manga,
             ":foto_catalogo" => $foto_catalogo,
             ":foto_biografia" => $foto_biografia,
-            ":infor_gerais" => $_POST["infor_gerais"],
-            ":descricao_foto_biografia" => $_POST["descricao_foto_biografia"]
+            ":infor_gerais" => trim($_POST["infor_gerais"] ?? ""),
+            ":descricao_foto_biografia" => trim($_POST["descricao_foto_biografia"] ?? "")
         ]);
 
-        $personagem_id = $pdo->lastInsertId();
+        $personagem_id = (int) $pdo->lastInsertId();
 
-        $sql = "INSERT INTO personagens_partes (personagem_id, parte_id, idade, papel) VALUES (:personagem_id, :parte_id, :idade, :papel)";
+        $sql = "
+            INSERT INTO personagens_partes (
+                personagem_id,
+                parte_id,
+                idade,
+                papel
+            ) VALUES (
+                :personagem_id,
+                :parte_id,
+                :idade,
+                :papel
+            )
+        ";
 
         $stmt = $pdo->prepare($sql);
 
         $stmt->execute([
             ":personagem_id" => $personagem_id,
-            ":parte_id" => $_POST["parte_id"],
-            ":idade" => $_POST["idade"],
+            ":parte_id" => (int) $_POST["parte_id"],
+            ":idade" => (int) $_POST["idade"],
             ":papel" => $_POST["papel"]
         ]);
 
-        header("Location: index.php?parte_id=". $_POST["parte_id"]);
+        $pdo->commit();
+
+        header("Location: index.php?parte_id=" . (int) $_POST["parte_id"] . "&status=salvo");
         exit;
 
-    } catch (Exception $e) {
-        echo $e->getMessage();
+    } catch (Throwable $erro) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        die("<pre>Erro ao salvar personagem:\n" . $erro->getMessage() . "</pre>");
     }
 }
+
 ?>
 
 <!DOCTYPE html>
