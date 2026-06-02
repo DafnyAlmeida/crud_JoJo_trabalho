@@ -1,59 +1,22 @@
 <?php
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
+require_once "../../src/functions/gerais.php";
+require_once "../../src/classes/personagem.class.php";
 
-function escapar(?string $valor): string
-{
-    return htmlspecialchars((string) $valor, ENT_QUOTES, "UTF-8");
-}
 
-function formatar_papel(?string $papel): string
-{
-    $papeis = [
-        "vilao" => "Vilão",
-        "protagonista" => "Protagonista",
-        "jojobro" => "JoJoBro"
-    ];
-
-    return $papeis[$papel] ?? ucfirst((string) $papel);
-}
-
-$personagem_id = filter_input(INPUT_GET, "id_personagem", FILTER_VALIDATE_INT);
-$parte_id = filter_input(INPUT_GET, "parte_id", FILTER_VALIDATE_INT);
+$personagem_id = validar_id_get("id_personagem");
+$parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
+$personagemModel = new Personagem($pdo);
 
 if (!$personagem_id || !$usuario_id) {
     header("Location: index.php?status=id_invalido");
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Caso a página tenha sido aberta sem parte_id
-|--------------------------------------------------------------------------
-| Seu link antigo enviava somente id_personagem. Assim, o sistema encontra
-| automaticamente uma parte relacionada ao personagem.
-|--------------------------------------------------------------------------
-*/
-
 if (!$parte_id) {
-    $sql = "
-        SELECT pp.parte_id
-        FROM personagens_partes pp
-        INNER JOIN personagens p
-            ON p.id = pp.personagem_id
-        WHERE pp.personagem_id = :personagem_id
-          AND p.usuario_id = :usuario_id
-        LIMIT 1
-    ";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ":personagem_id" => $personagem_id,
-        ":usuario_id" => $usuario_id
-    ]);
-
-    $parte_id = (int) $stmt->fetchColumn();
+    $parte_id = $personagemModel->buscarParteId($personagem_id, $usuario_id);
 }
 
 if (!$parte_id) {
@@ -61,82 +24,34 @@ if (!$parte_id) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Busca personagem, parte, informações da relação e Stand
-|--------------------------------------------------------------------------
-*/
-
-$sql = "
-    SELECT
-        p.*,
-        pp.idade,
-        pp.papel,
-        pa.nome AS parte_nome,
-        (
-            SELECT s.nome
-            FROM stands s
-            WHERE s.personagem_id = p.id
-              AND s.usuario_id = p.usuario_id
-            ORDER BY s.id ASC
-            LIMIT 1
-        ) AS stand_nome
-    FROM personagens p
-    INNER JOIN personagens_partes pp
-        ON pp.personagem_id = p.id
-    INNER JOIN partes pa
-        ON pa.id = pp.parte_id
-    WHERE p.id = :personagem_id
-      AND p.usuario_id = :usuario_id
-      AND pp.parte_id = :parte_id
-    LIMIT 1
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute([
-    ":personagem_id" => $personagem_id,
-    ":usuario_id" => $usuario_id,
-    ":parte_id" => $parte_id
-]);
-
-$personagem = $stmt->fetch(PDO::FETCH_OBJ);
+$personagem = $personagemModel->buscarDetalhes ($personagem_id, $usuario_id, $parte_id);
 
 if (!$personagem) {
     header("Location: index.php?parte_id=" . urlencode((string) $parte_id) . "&status=id_invalido");
     exit;
 }
 
-$fotoAnime = !empty($personagem->foto_anime)
-    ? "../" . ltrim($personagem->foto_anime, "/")
-    : "";
-
-$fotoManga = !empty($personagem->foto_manga)
-    ? "../" . ltrim($personagem->foto_manga, "/")
-    : "";
-
-$fotoBiografia = !empty($personagem->foto_biografia)
-    ? "../" . ltrim($personagem->foto_biografia, "/")
-    : "";
+$fotoAnime = caminho_foto($personagem->foto_anime);
+$fotoManga = caminho_foto($personagem->foto_manga);
+$fotoBiografia = caminho_foto($personagem->foto_biografia);
 
 $fotoPrincipal = $fotoAnime ?: $fotoManga;
 
-$descricao = trim((string) $personagem->infor_gerais);
+$descricao = texto_ou_padrao(
+    $personagem->infor_gerais,
+    "Nenhuma descrição geral foi cadastrada para este personagem."
+);
 
-if ($descricao === "") {
-    $descricao = "Nenhuma descrição geral foi cadastrada para este personagem.";
-}
+$biografia = texto_ou_padrao(
+    $personagem->biografia,
+    "Nenhuma biografia foi cadastrada para este personagem."
+);
 
-$biografia = trim((string) $personagem->biografia);
+$descricaoFoto = texto_ou_padrao(
+    $personagem->descricao_foto_biografia,
+    "Nenhuma descrição foi cadastrada para esta imagem."
+);
 
-if ($biografia === "") {
-    $biografia = "Nenhuma biografia foi cadastrada para este personagem.";
-}
-
-$descricaoFoto = trim((string) $personagem->descricao_foto_biografia);
-
-if ($descricaoFoto === "") {
-    $descricaoFoto = "Nenhuma descrição foi cadastrada para esta imagem.";
-}
 ?>
 
 <!DOCTYPE html>
@@ -382,7 +297,7 @@ if ($descricaoFoto === "") {
                         </div>
 
                         <p class="text-right text-sm font-semibold text-jojo-dark">
-                            <?= escapar(formatar_papel($personagem->papel)); ?>
+                            <?= escapar($personagemModel->formatar_papel($personagem->papel)); ?>
                         </p>
                     </div>
 

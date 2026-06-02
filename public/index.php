@@ -2,6 +2,12 @@
 include_once "../src/config/conexao.php";
 include_once "../src/includes/bloqueio.php";
 
+$sql = "SELECT * FROM partes";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+
+$partes = $stmt->fetchAll(PDO::FETCH_OBJ);
+
 $partes = [
     [
         "id" => 1,

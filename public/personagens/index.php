@@ -1,34 +1,19 @@
 <?php
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
+require_once "../../src/functions/gerais.php";
+require_once "../../src/classes/personagem.class.php";
 
-function escapar(?string $valor): string
-{
-    return htmlspecialchars((string) $valor, ENT_QUOTES, "UTF-8");
-}
-
-function link_pagina(int $parte_id, int $pagina): string
-{
-    return "index.php?" . http_build_query([
-        "parte_id" => $parte_id,
-        "pagina" => $pagina
-    ]);
-}
-
-$parte_id = filter_input(INPUT_GET, "parte_id", FILTER_VALIDATE_INT);
+$parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
+// Fazer uma função de verificação
 if (!$parte_id || !$usuario_id) {
     header("Location: ../index.php?status=parte_invalida");
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Busca a parte atual
-|--------------------------------------------------------------------------
-*/
-
+// Implementar partes
 $sql = "
     SELECT id, nome
     FROM partes
@@ -48,11 +33,8 @@ if (!$parte) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Paginação
-|--------------------------------------------------------------------------
-*/
+// Substituir depois 
+$personagemModel = new Personagem($pdo);
 
 $por_pagina = 8;
 $pagina_atual = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT) ?: 1;
@@ -76,7 +58,7 @@ $stmt->execute([
     ":usuario_id" => $usuario_id
 ]);
 
-$total_personagens = (int) $stmt->fetchColumn();
+$total_personagens = $personagemModel->contarPersonagens ($parte_id,$usuario_id);
 $total_paginas = max(1, (int) ceil($total_personagens / $por_pagina));
 
 if ($pagina_atual > $total_paginas) {
@@ -85,54 +67,8 @@ if ($pagina_atual > $total_paginas) {
 
 $offset = ($pagina_atual - 1) * $por_pagina;
 
-/*
-|--------------------------------------------------------------------------
-| Busca personagens e o primeiro Stand vinculado
-|--------------------------------------------------------------------------
-| Caso um personagem ainda não tenha Stand, será exibido "Sem Stand".
-|--------------------------------------------------------------------------
-*/
+$personagens = $personagemModel->listarPorParte($parte_id, $usuario_id, $por_pagina, $offset);
 
-$sql = "
-    SELECT DISTINCT
-        p.id,
-        p.usuario_id,
-        p.nome,
-        p.foto_catalogo,
-        (
-            SELECT s.nome
-            FROM stands s
-            WHERE s.personagem_id = p.id
-              AND s.usuario_id = :usuario_stand
-            ORDER BY s.id ASC
-            LIMIT 1
-        ) AS stand_nome
-    FROM personagens p
-    INNER JOIN personagens_partes pp
-        ON pp.personagem_id = p.id
-    WHERE pp.parte_id = :parte_id
-      AND p.usuario_id = :usuario_personagem
-    ORDER BY p.id DESC
-    LIMIT :limite OFFSET :offset
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(":usuario_stand", $usuario_id, PDO::PARAM_INT);
-$stmt->bindValue(":parte_id", $parte_id, PDO::PARAM_INT);
-$stmt->bindValue(":usuario_personagem", $usuario_id, PDO::PARAM_INT);
-$stmt->bindValue(":limite", $por_pagina, PDO::PARAM_INT);
-$stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
-$stmt->execute();
-
-$personagens = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-/*
-|--------------------------------------------------------------------------
-| Cores dos cards
-|--------------------------------------------------------------------------
-| As cores se repetem conforme a posição do card.
-|--------------------------------------------------------------------------
-*/
 
 $temas = [
     [

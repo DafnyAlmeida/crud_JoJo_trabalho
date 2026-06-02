@@ -132,7 +132,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 
                 <!-- Email -->
                 <div class="bg-white rounded-xl px-4 py-3 shadow-input border border-purple-100">
-                    
                     <label for="email" class="block font-lato font-bold text-gray-700 text-xs mb-1.5 tracking-wide">Email</label>
                     <div class="flex items-center gap-3">
                         <svg class="w-4 h-4 text-jojo-pink flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
