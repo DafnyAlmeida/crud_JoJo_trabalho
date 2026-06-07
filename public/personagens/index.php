@@ -1,19 +1,20 @@
 <?php
+
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
 require_once "../../src/functions/gerais.php";
-require_once "../../src/classes/personagem.class.php";
 
+// Pega o ID da parte e o id do user logado
 $parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
-// Fazer uma função de verificação
+// Verifica se ambos existem
 if (!$parte_id || !$usuario_id) {
     header("Location: ../index.php?status=parte_invalida");
     exit;
 }
 
-// Implementar partes
+// Seleciona o id e o nome da parte
 $sql = "
     SELECT id, nome
     FROM partes
@@ -28,47 +29,87 @@ $stmt->execute([
 
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
+// Verifica se a consulta retornou algo
 if (!$parte) {
     header("Location: ../index.php?status=parte_invalida");
     exit;
 }
 
-// Substituir depois 
-$personagemModel = new Personagem($pdo);
-
+// Determina que serão exibidos 8 personagens por parte e pega a pagina atual pela URL
 $por_pagina = 8;
 $pagina_atual = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT) ?: 1;
 
-if ($pagina_atual < 1) {
-    $pagina_atual = 1;
-}
-
+// Pega quantos personagens tem e vê quantas paginas tem que ter
 $sql = "
     SELECT COUNT(DISTINCT p.id)
     FROM personagens p
+
     INNER JOIN personagens_partes pp
         ON pp.personagem_id = p.id
+
     WHERE pp.parte_id = :parte_id
-      AND p.usuario_id = :usuario_id
-";
+    AND p.usuario_id = :usuario_id
+    ";
 
 $stmt = $pdo->prepare($sql);
+
 $stmt->execute([
     ":parte_id" => $parte_id,
     ":usuario_id" => $usuario_id
 ]);
 
-$total_personagens = $personagemModel->contarPersonagens ($parte_id,$usuario_id);
+$total_personagens = $stmt->fetchColumn();
+
 $total_paginas = max(1, (int) ceil($total_personagens / $por_pagina));
 
-if ($pagina_atual > $total_paginas) {
+// Impede valor inválido
+if ($pagina_atual < 1) {
+    $pagina_atual = 1;
+} else if ($pagina_atual > $total_paginas) {
     $pagina_atual = $total_paginas;
 }
 
+// Determina quantos personagens devem ser buscados e retorna esses personagens
 $offset = ($pagina_atual - 1) * $por_pagina;
 
-$personagens = $personagemModel->listarPorParte($parte_id, $usuario_id, $por_pagina, $offset);
+$sql = "
+    SELECT DISTINCT
+        p.id,
+        p.usuario_id,
+        p.nome,
+        p.foto_catalogo,
+        (
+            SELECT s.nome
+            FROM stands s
+            WHERE s.personagem_id = p.id
+            AND s.usuario_id = :usuario_stand
+            ORDER BY s.id ASC
+            LIMIT 1
+        ) AS stand_nome
+    FROM personagens p
 
+    INNER JOIN personagens_partes pp
+        ON pp.personagem_id = p.id
+
+    WHERE pp.parte_id = :parte_id
+    AND p.usuario_id = :usuario_personagem
+
+    ORDER BY p.id DESC
+
+    LIMIT :limite OFFSET :offset
+";
+
+$stmt = $pdo->prepare($sql);
+
+$stmt->bindValue(":usuario_stand", $usuario_id, PDO::PARAM_INT);
+$stmt->bindValue(":parte_id", $parte_id, PDO::PARAM_INT);
+$stmt->bindValue(":usuario_personagem", $usuario_id, PDO::PARAM_INT);
+$stmt->bindValue(":limite", $por_pagina, PDO::PARAM_INT);
+$stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
+
+$stmt->execute();
+
+$personagens = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 $temas = [
     [
@@ -96,6 +137,7 @@ $temas = [
         "decoracao" => "fa-regular fa-snowflake"
     ]
 ];
+
 ?>
 
 <!DOCTYPE html>
@@ -429,7 +471,5 @@ $temas = [
             </div>
         </footer>
     <?php endif; ?>
-
 </body>
-
 </html>

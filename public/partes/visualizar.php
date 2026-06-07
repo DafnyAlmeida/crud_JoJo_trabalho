@@ -1,147 +1,58 @@
 <?php
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
+include_once "../../src/functions/gerais.php";
 
-function escapar(string $valor): string
-{
-    return htmlspecialchars($valor, ENT_QUOTES, "UTF-8");
-}
+$parte_id = validar_id_get("id");
 
-$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
-
-if (!$id) {
+// Vê se veio ID
+if (!$parte_id) {
     header("Location: ../index.php?status=id_vazio");
     exit;
 }
 
-/* Buscando a parte */
+// Seleciona uma parte especifica
 $sql = "SELECT * FROM partes WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
-    ":id" => $id
+    ":id" => $parte_id
 ]);
 
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
+// Vê se a consulta retornou algo
 if (!$parte) {
     header("Location: ../index.php?status=id_invalido");
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Contagens
-|--------------------------------------------------------------------------
-| As consultas abaixo consideram:
-| - personagens relacionados por personagens_partes
-| - stands relacionados aos personagens
-| - referencias contendo a coluna parte_id
-|--------------------------------------------------------------------------
-*/
+// Funções que retornam o total de cada coisa de acordo com a parte
+$total_personagens = pegarTotal(
+    $pdo,
+    $parte_id,
+    "SELECT COUNT(DISTINCT personagem_id)
+     FROM personagens_partes
+     WHERE parte_id = :parte_id"
+);
 
-$sqlStands = "
-    SELECT COUNT(DISTINCT s.id)
-    FROM stands s
-    INNER JOIN personagens_partes pp
-        ON pp.personagem_id = s.personagem_id
-    WHERE pp.parte_id = :parte_id
-";
+$total_stands = pegarTotal(
+    $pdo,
+    $parte_id,
+    "SELECT COUNT(DISTINCT s.id)
+     FROM stands s
+     INNER JOIN personagens_partes pp
+         ON pp.personagem_id = s.personagem_id
+     WHERE pp.parte_id = :parte_id"
+);
 
-$stmtStands = $pdo->prepare($sqlStands);
-$stmtStands->execute([
-    ":parte_id" => $id
-]);
-$totalStands = (int) $stmtStands->fetchColumn();
+$total_referencias = pegarTotal(
+    $pdo,
+    $parte_id,
+    "SELECT COUNT(DISTINCT id)
+     FROM referencias
+     WHERE parte_id = :parte_id"
+);
 
-
-$sqlPersonagens = "
-    SELECT COUNT(DISTINCT personagem_id)
-    FROM personagens_partes
-    WHERE parte_id = :parte_id
-";
-
-$stmtPersonagens = $pdo->prepare($sqlPersonagens);
-$stmtPersonagens->execute([
-    ":parte_id" => $id
-]);
-$totalPersonagens = (int) $stmtPersonagens->fetchColumn();
-
-
-$sqlReferencias = "
-    SELECT COUNT(*)
-    FROM referencias
-    WHERE parte_id = :parte_id
-";
-
-$stmtReferencias = $pdo->prepare($sqlReferencias);
-$stmtReferencias->execute([
-    ":parte_id" => $id
-]);
-$totalReferencias = (int) $stmtReferencias->fetchColumn();
-
-
-/* Informações visuais */
-$numeroParte = str_pad((string) $parte->id, 2, "0", STR_PAD_LEFT);
-
-$pastaImagem = "../img/partes/parte-" . $parte->id;
-
-$imagens = [
-    "banner" => $pastaImagem . "/banner.png",
-    "stands" => $pastaImagem . "/stands.png",
-    "personagens" => $pastaImagem . "/personagens.png",
-    "referencias" => $pastaImagem . "/referencias.png",
-    "sinopse" => $pastaImagem . "/sinopse.png"
-];
-
-$descricao = trim((string) ($parte->descricao ?? ""));
-
-if ($descricao === "") {
-    $descricao = "Cadastre uma descrição para apresentar a história, os personagens e os acontecimentos desta parte.";
-}
-
-$paragrafosDescricao = preg_split('/\r?\n\s*\r?\n/', $descricao);
-
-$cards = [
-    [
-        "titulo" => "Stands",
-        "quantidade" => $totalStands,
-        "legenda" => "stands registrados",
-        "descricao" => "Explore e gerencie todos os Stands da parte " . $parte->nome . ".",
-        "icone" => "fa-regular fa-star",
-        "imagem" => $imagens["stands"],
-        "link" => "../stands/index.php?parte_id=" . $parte->id,
-        "botao" => "Gerenciar Stands",
-        "cor" => "#6534c5",
-        "cor_secundaria" => "#7647d4",
-        "fundo" => "#f6f1ff"
-    ],
-    [
-        "titulo" => "Personagens",
-        "quantidade" => $totalPersonagens,
-        "legenda" => "personagens cadastrados",
-        "descricao" => "Visualize e gerencie os personagens que fazem parte desta jornada.",
-        "icone" => "fa-solid fa-user",
-        "imagem" => $imagens["personagens"],
-        "link" => "../personagens/index.php?parte_id=" . $parte->id,
-        "botao" => "Gerenciar Personagens",
-        "cor" => "#cc3782",
-        "cor_secundaria" => "#df478f",
-        "fundo" => "#fff3f8"
-    ],
-    [
-        "titulo" => "Referências",
-        "quantidade" => $totalReferencias,
-        "legenda" => "referências registradas",
-        "descricao" => "Acesse e organize entrevistas, guias, livros e muito mais.",
-        "icone" => "fa-solid fa-book-open",
-        "imagem" => $imagens["referencias"],
-        "link" => "../referencias/index.php?parte_id=" . $parte->id,
-        "botao" => "Gerenciar Referências",
-        "cor" => "#6534c5",
-        "cor_secundaria" => "#7650cf",
-        "fundo" => "#f6f1ff"
-    ]
-];
 ?>
 
 <!DOCTYPE html>
@@ -239,62 +150,163 @@ $cards = [
         <!-- Cards de gerenciamento -->
         <section class="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3">
 
-            <?php foreach ($cards as $card): ?>
-                <article
-                    class="card-gerenciar relative min-h-[375px] overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card"
-                    style="background: linear-gradient(120deg, #ffffff 0%, <?= escapar($card["fundo"]); ?> 100%);">
+            <!-- Card Stands -->
+            <article
+                class="card-gerenciar relative min-h-[375px] overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card"
+                style="background: linear-gradient(120deg, #ffffff 0%, #f6f1ff 100%);">
 
-                    <!-- Conteúdo do card -->
-                    <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
+                <!-- Conteúdo do card -->
+                <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
 
-                        <div class="flex items-center gap-3">
-                            <i class="<?= escapar($card["icone"]); ?> text-[30px]"
-                                style="color: <?= escapar($card["cor"]); ?>;"></i>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-regular fa-star text-[30px]"
+                            style="color: #6534c5;"></i>
 
-                            <h2 class="font-title text-[29px] font-bold"
-                                style="color: <?= escapar($card["cor"]); ?>;">
-                                <?= escapar($card["titulo"]); ?>
-                            </h2>
-                        </div>
-
-                        <p class="mt-5 font-title text-[48px] font-bold leading-none"
-                            style="color: <?= escapar($card["cor"]); ?>;">
-                            <?= $card["quantidade"]; ?>
-                        </p>
-
-                        <p class="mt-2 text-xs font-semibold"
-                            style="color: <?= escapar($card["cor"]); ?>;">
-                            <?= escapar($card["legenda"]); ?>
-                        </p>
-
-                        <p class="mt-6 max-w-[205px] text-[13px] leading-6 text-[#554572]">
-                            <?= escapar($card["descricao"]); ?>
-                        </p>
-
-                        <div class="mt-auto pt-7">
-                            <a href="<?= escapar($card["link"]); ?>"
-                                class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                                style="background: linear-gradient(90deg, <?= escapar($card["cor"]); ?>, <?= escapar($card["cor_secundaria"]); ?>);">
-
-                                <?= escapar($card["botao"]); ?>
-
-                                <i class="fa-solid fa-arrow-right-long"></i>
-                            </a>
-                        </div>
+                        <h2 class="font-title text-[29px] font-bold"
+                            style="color: #6534c5;">
+                            Stands
+                        </h2>
                     </div>
 
-                    <!-- Imagem do card -->
-                    <img src="<?= escapar($card["imagem"]); ?>"
-                        alt="<?= escapar($card["titulo"]); ?>"
-                        class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
+                    <p class="mt-5 font-title text-[48px] font-bold leading-none"
+                        style="color: #6534c5;">
+                        <?= $total_stands; ?>
+                    </p>
 
-                </article>
-            <?php endforeach; ?>
+                    <p class="mt-2 text-xs font-semibold"
+                        style="color: #6534c5;">
+                        stands registrados
+                    </p>
+
+                    <p class="mt-6 max-w-[205px] text-[13px] leading-6 text-[#554572]">
+                        Explore e gerencie todos os Stands da parte <?= escapar($parte->nome); ?>.
+                    </p>
+
+                    <div class="mt-auto pt-7">
+                        <a href="../stands/index.php?parte_id=<?= $parte->id; ?>"
+                            class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+                            style="background: linear-gradient(90deg, #6534c5, #7647d4);">
+
+                            Gerenciar Stands
+
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Imagem do card -->
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/stands.png"
+                    alt="Stands"
+                    class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
+
+            </article>
+
+            <!-- Card Personagens -->
+            <article
+                class="card-gerenciar relative min-h-[375px] overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card"
+                style="background: linear-gradient(120deg, #ffffff 0%, #fff3f8 100%);">
+
+                <!-- Conteúdo do card -->
+                <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
+
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-user text-[30px]"
+                            style="color: #cc3782;"></i>
+
+                        <h2 class="font-title text-[29px] font-bold"
+                            style="color: #cc3782;">
+                            Personagens
+                        </h2>
+                    </div>
+
+                    <p class="mt-5 font-title text-[48px] font-bold leading-none"
+                        style="color: #cc3782;">
+                        <?= $total_personagens; ?>
+                    </p>
+
+                    <p class="mt-2 text-xs font-semibold"
+                        style="color: #cc3782;">
+                        personagens cadastrados
+                    </p>
+
+                    <p class="mt-6 max-w-[205px] text-[13px] leading-6 text-[#554572]">
+                        Visualize e gerencie os personagens que fazem parte desta jornada.
+                    </p>
+
+                    <div class="mt-auto pt-7">
+                        <a href="../personagens/index.php?parte_id=<?= $parte->id; ?>"
+                            class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+                            style="background: linear-gradient(90deg, #cc3782, #df478f);">
+
+                            Gerenciar Personagens
+
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Imagem do card -->
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/personagens.png"
+                    alt="Personagens"
+                    class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
+
+            </article>
+
+            <!-- Card Referências -->
+            <article
+                class="card-gerenciar relative min-h-[375px] overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card"
+                style="background: linear-gradient(120deg, #ffffff 0%, #f6f1ff 100%);">
+
+                <!-- Conteúdo do card -->
+                <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
+
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-book-open text-[30px]"
+                            style="color: #6534c5;"></i>
+
+                        <h2 class="font-title text-[29px] font-bold"
+                            style="color: #6534c5;">
+                            Referências
+                        </h2>
+                    </div>
+
+                    <p class="mt-5 font-title text-[48px] font-bold leading-none"
+                        style="color: #6534c5;">
+                        <?= $total_referencias; ?>
+                    </p>
+
+                    <p class="mt-2 text-xs font-semibold"
+                        style="color: #6534c5;">
+                        referências registradas
+                    </p>
+
+                    <p class="mt-6 max-w-[205px] text-[13px] leading-6 text-[#554572]">
+                        Acesse e organize entrevistas, guias, livros e muito mais.
+                    </p>
+
+                    <div class="mt-auto pt-7">
+                        <a href="../referencias/index.php?parte_id=<?= $parte->id; ?>"
+                            class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+                            style="background: linear-gradient(90deg, #6534c5, #7650cf);">
+
+                            Gerenciar Referências
+
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Imagem do card -->
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/referencias.png"
+                    alt="Referências"
+                    class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
+
+            </article>
 
         </section>
 
         <!-- Sinopse da Parte -->
-        <section class="sinopse-parte relative mt-7 min-h-[280px] overflow-hidden rounded-[20px] border border-jojo-border shadow-soft">
+        <section class="sinopse-parte relative mt-7 min-h-[200px] overflow-hidden rounded-[20px] border border-jojo-border shadow-soft">
 
             <div class="relative z-20 px-8 py-7 lg:w-[64%]">
                 <div class="mb-4 flex items-center gap-4">
@@ -304,12 +316,9 @@ $cards = [
                         Sinopse da Parte
                     </h2>
                 </div>
-
-                <?php foreach ($paragrafosDescricao as $paragrafo): ?>
-                    <p class="mb-4 text-sm leading-7 text-[#46337a] md:text-[15px]">
-                        <?= escapar($paragrafo); ?>
-                    </p>
-                <?php endforeach; ?>
+                <p class="pb-2 text-sm leading-7 text-[#46337a] md:text-[15px]">
+                    <?= escapar($parte->descricao); ?>
+                </p>
             </div>
 
             <!-- Decorações -->
@@ -322,7 +331,7 @@ $cards = [
             </div>
 
             <!-- Imagem lateral -->
-            <img src="<?= escapar($imagens["sinopse"]); ?>"
+            <img src="../assets/img/partes/parte-<?= $parte->id; ?>/sinopse.png"
                 alt="Personagens de <?= escapar($parte->nome); ?>"
                 class="pointer-events-none absolute bottom-0 right-0 hidden h-[255px] w-[42%] object-contain object-bottom lg:block">
         </section>

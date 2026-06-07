@@ -1,18 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Upload de imagens
-|--------------------------------------------------------------------------
-| Arquivo esperado em: src/functions/upload.php
-| Pasta final: public/uploads/
-|
-| As chamadas existentes continuam iguais:
-| salvar_imagem("foto_anime", "personagens", $_POST["nome"]);
-| salvar_imagem_array("imagem", $index, "habilidades", $nome);
-|--------------------------------------------------------------------------
-*/
-
 function caminho_publico()
 {
     return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "public";
@@ -159,19 +146,6 @@ function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base)
 
     return $destino['banco'] . $novo_nome;
 }
-
-/*
-|--------------------------------------------------------------------------
-| Exclusão
-|--------------------------------------------------------------------------
-| deletar_arquivo() aceita o caminho salvo no banco:
-| uploads/personagens/jotaro-kujo/foto.png
-|
-| deletar_pasta() aceita a pasta relativa:
-| uploads/personagens/jotaro-kujo
-| ou uma imagem da pasta, caso seu excluir.php já use essa forma.
-|--------------------------------------------------------------------------
-*/
 
 function caminho_fisico_publico($caminho)
 {

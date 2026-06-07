@@ -1,22 +1,21 @@
 <?php
+
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
 require_once "../../src/functions/gerais.php";
-require_once "../../src/classes/personagem.class.php";
-
 
 $personagem_id = validar_id_get("id_personagem");
 $parte_id = validar_id_get("parte_id");
+
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
-$personagemModel = new Personagem($pdo);
 
 if (!$personagem_id || !$usuario_id) {
-    header("Location: index.php?status=id_invalido");
+    header("Location: index.php?status=personagem_invalido");
     exit;
 }
 
 if (!$parte_id) {
-    $parte_id = $personagemModel->buscarParteId($personagem_id, $usuario_id);
+    $parte_id = buscarParteId($pdo, $personagem_id, $usuario_id);
 }
 
 if (!$parte_id) {
@@ -24,10 +23,49 @@ if (!$parte_id) {
     exit;
 }
 
-$personagem = $personagemModel->buscarDetalhes ($personagem_id, $usuario_id, $parte_id);
+// Buscar detalhes da parte
+
+$sql = "
+    SELECT
+        p.*,
+        pp.idade,
+        pp.papel,
+        pa.nome AS parte_nome,
+        (
+            SELECT s.nome
+            FROM stands s
+            WHERE s.personagem_id = p.id
+            AND s.usuario_id = p.usuario_id
+            ORDER BY s.id ASC
+            LIMIT 1
+        ) AS stand_nome
+    FROM personagens p
+
+    INNER JOIN personagens_partes pp
+        ON pp.personagem_id = p.id
+
+    INNER JOIN partes pa
+        ON pa.id = pp.parte_id
+
+    WHERE p.id = :personagem_id
+    AND p.usuario_id = :usuario_id
+    AND pp.parte_id = :parte_id
+
+    LIMIT 1
+    ";
+
+$stmt = $pdo->prepare($sql);
+
+$stmt->execute([
+    ":personagem_id" => $personagem_id,
+    ":usuario_id" => $usuario_id,
+    ":parte_id" => $parte_id
+]);
+
+$personagem = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$personagem) {
-    header("Location: index.php?parte_id=" . urlencode((string) $parte_id) . "&status=id_invalido");
+    header("Location: index.php?parte_id=" . urlencode((string) $parte_id) . "&status=personagem_invalido");
     exit;
 }
 
@@ -297,7 +335,7 @@ $descricaoFoto = texto_ou_padrao(
                         </div>
 
                         <p class="text-right text-sm font-semibold text-jojo-dark">
-                            <?= escapar($personagemModel->formatar_papel($personagem->papel)); ?>
+                            <?= escapar(formatar_papel($personagem->papel)); ?>
                         </p>
                     </div>
 

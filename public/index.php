@@ -1,12 +1,10 @@
 <?php
 include_once "../src/config/conexao.php";
 include_once "../src/includes/bloqueio.php";
+include_once "../src/functions/gerais.php";
 
-$sql = "SELECT * FROM partes";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-
-$partes = $stmt->fetchAll(PDO::FETCH_OBJ);
+$usuario_id = $_SESSION["usuario_id"];
+$totaisPorParte = listarTotaisPorParte($pdo, $usuario_id);
 
 $partes = [
     [
@@ -15,9 +13,6 @@ $partes = [
         "nome" => "Phantom Blood",
         "imagem" => "img/partes/parte-1.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 24,
-        "personagens" => 27,
-        "referencias" => 48,
         "cor" => "#7446c7",
         "cor_clara" => "#a874e5",
         "fundo" => "#f7f1ff",
@@ -29,9 +24,6 @@ $partes = [
         "nome" => "Battle Tendency",
         "imagem" => "img/partes/parte-2.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 35,
-        "personagens" => 33,
-        "referencias" => 62,
         "cor" => "#df468d",
         "cor_clara" => "#ee76b0",
         "fundo" => "#fff2f8",
@@ -43,9 +35,6 @@ $partes = [
         "nome" => "Stardust Crusaders",
         "imagem" => "img/partes/parte-3.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 128,
-        "personagens" => 96,
-        "referencias" => 214,
         "cor" => "#7045c9",
         "cor_clara" => "#9565dd",
         "fundo" => "#f5f1ff",
@@ -57,9 +46,6 @@ $partes = [
         "nome" => "Diamond is Unbreakable",
         "imagem" => "img/partes/parte-4.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 77,
-        "personagens" => 57,
-        "referencias" => 132,
         "cor" => "#d1a042",
         "cor_clara" => "#ecc767",
         "fundo" => "#fff9ed",
@@ -71,9 +57,6 @@ $partes = [
         "nome" => "Golden Wind",
         "imagem" => "img/partes/parte-5.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 93,
-        "personagens" => 68,
-        "referencias" => 156,
         "cor" => "#dc438c",
         "cor_clara" => "#ec77b2",
         "fundo" => "#fff2f8",
@@ -85,9 +68,6 @@ $partes = [
         "nome" => "Stone Ocean",
         "imagem" => "img/partes/parte-6.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 64,
-        "personagens" => 45,
-        "referencias" => 98,
         "cor" => "#4d9ac8",
         "cor_clara" => "#9d82e2",
         "fundo" => "#eefaff",
@@ -99,9 +79,6 @@ $partes = [
         "nome" => "Steel Ball Run",
         "imagem" => "img/partes/parte-7.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 83,
-        "personagens" => 71,
-        "referencias" => 142,
         "cor" => "#cf9e40",
         "cor_clara" => "#edc268",
         "fundo" => "#fff9ed",
@@ -113,9 +90,6 @@ $partes = [
         "nome" => "JoJolion",
         "imagem" => "img/partes/parte-8.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 89,
-        "personagens" => 63,
-        "referencias" => 118,
         "cor" => "#7143c5",
         "cor_clara" => "#9970dc",
         "fundo" => "#f6f1ff",
@@ -127,15 +101,23 @@ $partes = [
         "nome" => "The JOJOLands",
         "imagem" => "img/partes/parte-9.png",
         "icone" => "fa-solid fa-star",
-        "stands" => 18,
-        "personagens" => 22,
-        "referencias" => 31,
         "cor" => "#3f88b7",
         "cor_clara" => "#6fb6dc",
         "fundo" => "#effaff",
         "decoracao" => "fa-solid fa-gem"
     ]
 ];
+
+foreach ($partes as &$parte) {
+    $idParte = (int) $parte["id"];
+
+    $parte["stands"] = $totaisPorParte[$idParte]["stands"] ?? 0;
+    $parte["personagens"] = $totaisPorParte[$idParte]["personagens"] ?? 0;
+    $parte["referencias"] = $totaisPorParte[$idParte]["referencias"] ?? 0;
+}
+
+unset($parte);
+
 ?>
 
 <!DOCTYPE html>
@@ -238,6 +220,11 @@ $partes = [
                     </p>
                 </div>
             </div>
+
+            <div>
+                <!-- Colocar a imagem aqui -->
+                <img src="" alt="">
+            </div>
         </section>
 
         <!-- Cabeçalho da listagem -->
@@ -247,12 +234,6 @@ $partes = [
                 <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
             </h2>
 
-            <button
-                class="flex items-center gap-3 rounded-xl border border-jojo-border bg-white px-4 py-3 text-sm font-medium text-[#66577f] shadow-soft transition hover:bg-purple-50">
-                <i class="fa-solid fa-arrow-down-wide-short text-jojo-lilac"></i>
-                Ordenar por
-                <i class="fa-solid fa-chevron-down text-xs"></i>
-            </button>
         </section>
 
         <!-- Cards das partes -->
@@ -305,7 +286,7 @@ $partes = [
                             <span class="flex items-center gap-1 text-base font-bold"
                                 style="color: <?= $parte['cor']; ?>;">
                                 <i class="<?= $parte['icone']; ?> text-xs"></i>
-                                <?= $parte["stands"]; ?>
+                                <?= $parte["stands"];; ?>
                             </span>
                         </div>
 

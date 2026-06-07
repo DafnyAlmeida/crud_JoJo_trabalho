@@ -1,7 +1,7 @@
 <?php 
 include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
-include_once "../../src/function/upload.php";
+include_once "../../src/functions/upload.php";
 
 if (empty($_GET["id_stand"]) || !filter_var($_GET["id_stand"], FILTER_VALIDATE_INT)) {
     header("Location: index.php?status=id_invalido");
@@ -24,6 +24,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ":id" => $stand_id
 ]);
+
 $stand = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$stand) {
@@ -38,6 +39,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ":stand_id" => $stand_id
 ]);
+
 $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 try {
@@ -77,7 +79,7 @@ try {
         ":id" => $stand_id
     ]);
 
-    header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=delete_ok");
+    header("Location: index.php?parte_id=" . $parte_id . "&status=delete_ok");
     exit;
 
 } catch (Exception $e) {

@@ -1,21 +1,10 @@
 <?php
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
+include_once "../../src/functions/gerais.php";
+include_once "../../src/functions/upload.php";
 
-function escapar(?string $valor): string
-{
-    return htmlspecialchars((string) $valor, ENT_QUOTES, "UTF-8");
-}
-
-function link_pagina(int $parte_id, int $pagina): string
-{
-    return "index.php?" . http_build_query([
-        "parte_id" => $parte_id,
-        "pagina" => $pagina
-    ]);
-}
-
-$parte_id = filter_input(INPUT_GET, "parte_id", FILTER_VALIDATE_INT);
+$parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
 if (!$parte_id || !$usuario_id) {
@@ -42,13 +31,8 @@ if (!$parte) {
     exit;
 }
 
-
 $por_pagina = 8;
 $pagina_atual = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT) ?: 1;
-
-if ($pagina_atual < 1) {
-    $pagina_atual = 1;
-}
 
 $sql = "
     SELECT COUNT(DISTINCT s.id)
@@ -67,49 +51,18 @@ $stmt->execute([
     ":usuario_id" => $usuario_id
 ]);
 
-$total_stands = (int) $stmt->fetchColumn();
+$total_stands = contarStands($pdo, $parte_id, $usuario_id);
 $total_paginas = max(1, (int) ceil($total_stands / $por_pagina));
 
-if ($pagina_atual > $total_paginas) {
+if ($pagina_atual < 1) {
+    $pagina_atual = 1;
+} else if ($pagina_atual > $total_paginas) {
     $pagina_atual = $total_paginas;
 }
 
 $offset = ($pagina_atual - 1) * $por_pagina;
 
-
-$sql = "
-    SELECT DISTINCT
-        s.id,
-        s.nome,
-        s.descricao,
-        s.foto_anime,
-        s.foto_manga,
-        p.nome AS personagem_nome
-    FROM stands s
-    INNER JOIN personagens p
-        ON p.id = s.personagem_id
-    INNER JOIN personagens_partes pp
-        ON pp.personagem_id = p.id
-    WHERE pp.parte_id = :parte_id
-      AND s.usuario_id = :usuario_id
-    ORDER BY s.id DESC
-    LIMIT :limite OFFSET :offset
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(":parte_id", $parte_id, PDO::PARAM_INT);
-$stmt->bindValue(":usuario_id", $usuario_id, PDO::PARAM_INT);
-$stmt->bindValue(":limite", $por_pagina, PDO::PARAM_INT);
-$stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
-$stmt->execute();
-
-$stands = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-/*
-|--------------------------------------------------------------------------
-| Temas dos cards
-|--------------------------------------------------------------------------
-*/
+$stands = listarPorParte($pdo, $parte_id, $usuario_id, $por_pagina, $offset);
 
 $temas = [
     [
@@ -137,6 +90,8 @@ $temas = [
         "decoracao" => "fa-regular fa-snowflake"
     ]
 ];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -308,8 +263,8 @@ $temas = [
                             <i class="fa-solid fa-star absolute bottom-10 right-9 text-[19px] opacity-[0.15]"
                                 style="color: <?= escapar($tema["cor"]); ?>;"></i>
 
-                            <?php if (!empty($stand->foto_anime)): ?>
-                                <img src="../<?= escapar($stand->foto_anime); ?>"
+                            <?php if (!empty($stand->foto_catalogo)): ?>
+                                <img src="../<?= escapar($stand->foto_catalogo); ?>"
                                     alt="Foto do Stand <?= escapar($stand->nome); ?>"
                                     class="foto-stand absolute inset-0 z-10 h-full w-full object-cover object-top">
                             <?php else: ?>

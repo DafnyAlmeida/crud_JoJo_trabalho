@@ -13,15 +13,12 @@ if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $nome = trim($_POST["nome"] ?? "");
-
     if ($nome === "") {
         die("Erro: nome do personagem não foi enviado.");
     }
-
     if (!isset($_POST["parte_id"]) || !filter_var($_POST["parte_id"], FILTER_VALIDATE_INT)) {
         die("Erro: parte inválida.");
     }
-
     foreach (["foto_anime", "foto_manga", "foto_catalogo", "foto_biografia"] as $campoFoto) {
         if (!isset($_FILES[$campoFoto])) {
             die("Erro: o campo {$campoFoto} não chegou ao PHP.");
@@ -33,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
+        
         $pdo->beginTransaction();
 
         $foto_anime = salvar_imagem("foto_anime", "personagens", $nome);
@@ -109,11 +107,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
 
     } catch (Throwable $erro) {
-
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
-
         die("<pre>Erro ao salvar personagem:\n" . $erro->getMessage() . "</pre>");
     }
 }
@@ -125,78 +121,253 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Adicionar novo personagem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        jojo: {
+                            dark: "#30204f",
+                            purple: "#7045c9",
+                            lilac: "#a78bfa",
+                            soft: "#f7f2ff",
+                            border: "#e7ddfa"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <title>Adicionar Personagem</title>
 </head>
 
-<body>
-    <main>
-        <form action="<?= $_SERVER["PHP_SELF"] ?>" method="post" enctype="multipart/form-data" class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
-        <input type="hidden" name="parte_id" value="<?= htmlspecialchars($parte_id) ?>">
+<body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark">
 
-            <!-- ETAPA 1 -->
-            <div class="etapa" id="etapa1">
-                <h2 class="text-2xl font-bold mb-4">Informações Gerais</h2>
+    <?php include_once "../../src/includes/header.php"; ?>
 
-                <label class="block mb-1">Nome do personagem</label>
-                <input type="text" name="nome" required class="w-full border rounded-lg p-2 mb-4">
+    <main class="mx-auto max-w-6xl px-6 py-7">
 
-                <label class="block mb-1">Informações gerais</label>
-                <textarea name="infor_gerais" class="w-full border rounded-lg p-2 mb-4"></textarea>
+        <div class="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
 
-                <button type="button" onclick="proximaEtapa(1)" class="bg-purple-600 text-white px-4 py-2 rounded-lg">
-                    Próximo
+                <h1 class="text-3xl font-bold text-jojo-dark">
+                    <i class="fa-regular fa-star mr-2 text-jojo-purple"></i>
+                    Novo Personagem
+                </h1>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Preencha os dados, biografia e fotos do personagem.
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+
+                <button type="submit" form="form-personagem"
+                    class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-200 transition hover:bg-purple-700">
+                    <i class="fa-regular fa-floppy-disk"></i>
+                    Salvar
                 </button>
             </div>
+        </div>
 
-            <!-- ETAPA 2 -->
-            <div class="etapa hidden" id="etapa2">
-                <h2 class="text-2xl font-bold mb-4">Fotos e Informações Específicas</h2>
+        <form 
+            id="form-personagem"
+            action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" 
+            method="post" 
+            enctype="multipart/form-data"
+            class="grid gap-5 lg:grid-cols-[0.9fr_1.4fr]"
+        >
+            <input type="hidden" name="parte_id" value="<?= htmlspecialchars($parte_id) ?>">
 
-                <label class="block mb-1">Biografia</label>
-                <textarea name="biografia" class="w-full border rounded-lg p-2 mb-4"></textarea>
+            <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
+                <h2 class="mb-4 flex items-center gap-2 text-lg font-bold text-jojo-purple">
+                    <i class="fa-regular fa-image"></i>
+                    Fotos do personagem
+                </h2>
 
-                <label for="idade">Idade</label>
-                <input type="number" name="idade" id="idade">
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                    <div class="foto-card">
+                        <label class="mb-1 block text-xs font-bold text-slate-600">
+                            Foto do anime <span class="text-red-500">*</span>
+                        </label>
 
-                <label for="papel">Papel</label>
-                <select name="papel" id="papel">
-                    <option value="vilao">Vilão</option>
-                    <option value="protagonista">Protagonista</option>
-                    <option value="jojobro">JoJoBro</option>
-                </select>
+                        <label class="group flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-jojo-border bg-purple-50/40 p-3 transition hover:bg-purple-50">
+                            <img id="preview_foto_anime" class="hidden h-40 w-full rounded-lg object-cover" alt="Prévia anime">
 
-                <label class="block mb-1">Foto do mangá</label>
-                <input type="file" name="foto_manga" class="w-full border rounded-lg p-2 mb-4">
+                            <div id="placeholder_foto_anime" class="flex h-40 w-full flex-col items-center justify-center rounded-lg text-center text-sm text-jojo-purple">
+                                <i class="fa-solid fa-cloud-arrow-up mb-2 text-2xl"></i>
+                                Clique para enviar
+                            </div>
 
-                <label class="block mb-1">Foto do anime</label>
-                <input type="file" name="foto_anime" class="w-full border rounded-lg p-2 mb-4">
+                            <input type="file" name="foto_anime" required accept="image/*" class="hidden"
+                                   onchange="previewImagem(this, 'preview_foto_anime', 'placeholder_foto_anime')">
+                        </label>
+                    </div>
 
-                <label class="block mb-1">Foto para catálogo</label>
-                <input type="file" name="foto_catalogo" class="w-full border rounded-lg p-2 mb-4">
+                    <div class="foto-card">
+                        <label class="mb-1 block text-xs font-bold text-slate-600">
+                            Foto do mangá <span class="text-red-500">*</span>
+                        </label>
 
-                <label class="block mb-1">Foto para biografia</label>
-                <input type="file" name="foto_biografia" class="w-full border rounded-lg p-2 mb-4">
+                        <label class="group flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-jojo-border bg-purple-50/40 p-3 transition hover:bg-purple-50">
+                            <img id="preview_foto_manga" class="hidden h-40 w-full rounded-lg object-cover" alt="Prévia mangá">
 
-                <label for="descricao_foto_biografia">Descrição para foto da biografia</label>
-                <input type="text" name="descricao_foto_biografia" id="descricao_foto_biografia">
+                            <div id="placeholder_foto_manga" class="flex h-40 w-full flex-col items-center justify-center rounded-lg text-center text-sm text-jojo-purple">
+                                <i class="fa-solid fa-cloud-arrow-up mb-2 text-2xl"></i>
+                                Clique para enviar
+                            </div>
 
-                <div class="flex justify-between mt-6">
-                    <button type="button" onclick="voltarEtapa(2)" class="bg-gray-500 text-white px-4 py-2 rounded-lg">
-                        Voltar
-                    </button>
+                            <input type="file" name="foto_manga" required accept="image/*" class="hidden"
+                                   onchange="previewImagem(this, 'preview_foto_manga', 'placeholder_foto_manga')">
+                        </label>
+                    </div>
 
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                        Salvar Personagem
-                    </button>
+                    <div class="foto-card">
+                        <label class="mb-1 block text-xs font-bold text-slate-600">
+                            Foto catálogo <span class="text-red-500">*</span>
+                        </label>
+
+                        <label class="group flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-jojo-border bg-purple-50/40 p-3 transition hover:bg-purple-50">
+                            <img id="preview_foto_catalogo" class="hidden h-40 w-full rounded-lg object-cover" alt="Prévia catálogo">
+
+                            <div id="placeholder_foto_catalogo" class="flex h-40 w-full flex-col items-center justify-center rounded-lg text-center text-sm text-jojo-purple">
+                                <i class="fa-solid fa-cloud-arrow-up mb-2 text-2xl"></i>
+                                Clique para enviar
+                            </div>
+
+                            <input type="file" name="foto_catalogo" required accept="image/*" class="hidden"
+                                   onchange="previewImagem(this, 'preview_foto_catalogo', 'placeholder_foto_catalogo')">
+                        </label>
+                    </div>
+
+                    <div class="foto-card">
+                        <label class="mb-1 block text-xs font-bold text-slate-600">
+                            Foto biografia <span class="text-red-500">*</span>
+                        </label>
+
+                        <label class="group flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-jojo-border bg-purple-50/40 p-3 transition hover:bg-purple-50">
+                            <img id="preview_foto_biografia" class="hidden h-40 w-full rounded-lg object-cover" alt="Prévia biografia">
+
+                            <div id="placeholder_foto_biografia" class="flex h-40 w-full flex-col items-center justify-center rounded-lg text-center text-sm text-jojo-purple">
+                                <i class="fa-solid fa-cloud-arrow-up mb-2 text-2xl"></i>
+                                Clique para enviar
+                            </div>
+
+                            <input type="file" name="foto_biografia" required accept="image/*" class="hidden"
+                                   onchange="previewImagem(this, 'preview_foto_biografia', 'placeholder_foto_biografia')">
+                        </label>
+                    </div>
                 </div>
+            </section>
+
+            <div class="space-y-5">
+
+                <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
+                    <h2 class="mb-4 flex items-center gap-2 text-lg font-bold text-jojo-purple">
+                        <i class="fa-regular fa-address-card"></i>
+                        Informações principais
+                    </h2>
+
+                    <div class="grid gap-4 md:grid-cols-2">
+                        <div class="md:col-span-2">
+                            <label for="nome" class="mb-1 block text-xs font-bold text-slate-600">
+                                Nome do personagem <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="nome" id="nome" required placeholder="Ex.: Jotaro Kujo"
+                                class="w-full rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100">
+                        </div>
+
+                        <div>
+                            <label for="idade" class="mb-1 block text-xs font-bold text-slate-600">
+                                Idade <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="idade" id="idade" required min="0" placeholder="Ex.: 17"
+                                class="w-full rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100">
+                        </div>
+
+                        <div>
+                            <label for="papel" class="mb-1 block text-xs font-bold text-slate-600">
+                                Papel <span class="text-red-500">*</span>
+                            </label>
+                            <select name="papel" id="papel" required
+                                class="w-full rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100">
+                                <option value="protagonista">Protagonista</option>
+                                <option value="vilao">Vilão</option>
+                                <option value="jojobro">JoJoBro</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="descricao_foto_biografia" class="mb-1 block text-xs font-bold text-slate-600">
+                                Descrição da foto da biografia
+                            </label>
+                            <input type="text" name="descricao_foto_biografia" id="descricao_foto_biografia"
+                                placeholder="Ex.: Cena marcante do personagem"
+                                class="w-full rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
+                    <h2 class="mb-4 flex items-center gap-2 text-lg font-bold text-jojo-purple">
+                        <i class="fa-regular fa-file-lines"></i>
+                        Textos
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="infor_gerais" class="mb-1 block text-xs font-bold text-slate-600">
+                                Informações gerais
+                            </label>
+                            <textarea name="infor_gerais" id="infor_gerais" rows="4"
+                                placeholder="Descreva informações gerais sobre o personagem..."
+                                class="w-full resize-none rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="biografia" class="mb-1 block text-xs font-bold text-slate-600">
+                                Biografia
+                            </label>
+                            <textarea name="biografia" id="biografia" rows="5"
+                                placeholder="Conte a história e participação do personagem..."
+                                class="w-full resize-none rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100"></textarea>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </form>
+
     </main>
 
-    
-    <!-- <script src="../assets/js/adicionar_habilidade.js"></script> -->
+    <script>
+        function previewImagem(input, previewId, placeholderId) {
+            const arquivo = input.files[0];
+            const preview = document.getElementById(previewId);
+            const placeholder = document.getElementById(placeholderId);
 
-    <script src="../assets/js/form_etapas.js"></script>
+            if (!arquivo) {
+                preview.classList.add("hidden");
+                placeholder.classList.remove("hidden");
+                return;
+            }
+
+            const leitor = new FileReader();
+
+            leitor.onload = function(evento) {
+                preview.src = evento.target.result;
+                preview.classList.remove("hidden");
+                placeholder.classList.add("hidden");
+            };
+
+            leitor.readAsDataURL(arquivo);
+        }
+    </script>
+
 </body>
 </html>

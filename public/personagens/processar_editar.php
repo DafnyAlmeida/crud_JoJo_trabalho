@@ -2,10 +2,8 @@
 
 include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
-
 require_once "../../src/functions/upload.php";
 require_once "../../src/functions/gerais.php";
-require_once "../../src/classes/personagem.class.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: index.php");
@@ -37,9 +35,8 @@ if ($nome === "") {
     exit;
 }
 
-$personagemModel = new Personagem($pdo);
-
-$personagem = $personagemModel->buscarParaEditar(
+$personagem = buscarParaEditar(
+    $pdo,
     $personagem_id,
     $usuario_id
 );
@@ -49,121 +46,54 @@ if (!$personagem) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| Mantém as fotos atuais como padrão
-|--------------------------------------------------------------------------
-*/
 $foto_anime = $personagem->foto_anime;
 $foto_manga = $personagem->foto_manga;
 $foto_catalogo = $personagem->foto_catalogo;
 $foto_biografia = $personagem->foto_biografia;
 
-/*
-|--------------------------------------------------------------------------
-| Guarda as imagens antigas que serão apagadas somente após o UPDATE
-|--------------------------------------------------------------------------
-*/
 $fotos_antigas_para_apagar = [];
 
-/*
-|--------------------------------------------------------------------------
-| Guarda imagens novas para apagar caso o UPDATE falhe
-|--------------------------------------------------------------------------
-*/
 $fotos_novas_para_remover = [];
 
 try {
-    /*
-    |--------------------------------------------------------------------------
-    | Nova foto do anime
-    |--------------------------------------------------------------------------
-    */
-    if (!empty($_FILES["foto_anime"]["name"])) {
-        $nova_foto = salvar_imagem(
-            "foto_anime",
-            "personagens",
-            $nome
-        );
+    $foto_anime = processar_upload_foto(
+        "foto_anime",
+        "personagens",
+        $nome,
+        $personagem->foto_anime,
+        $fotos_novas_para_remover,
+        $fotos_antigas_para_apagar
+    );
 
-        $fotos_novas_para_remover[] = $nova_foto;
+    $foto_manga = processar_upload_foto(
+        "foto_manga",
+        "personagens",
+        $nome,
+        $personagem->foto_manga,
+        $fotos_novas_para_remover,
+        $fotos_antigas_para_apagar
+    );
 
-        if (!empty($personagem->foto_anime)) {
-            $fotos_antigas_para_apagar[] = $personagem->foto_anime;
-        }
+    $foto_catalogo = processar_upload_foto(
+        "foto_catalogo",
+        "personagens",
+        $nome,
+        $personagem->foto_catalogo,
+        $fotos_novas_para_remover,
+        $fotos_antigas_para_apagar
+    );
 
-        $foto_anime = $nova_foto;
-    }
+    $foto_biografia = processar_upload_foto(
+        "foto_biografia",
+        "personagens",
+        $nome,
+        $personagem->foto_biografia,
+        $fotos_novas_para_remover,
+        $fotos_antigas_para_apagar
+    );
 
-    /*
-    |--------------------------------------------------------------------------
-    | Nova foto do mangá
-    |--------------------------------------------------------------------------
-    */
-    if (!empty($_FILES["foto_manga"]["name"])) {
-        $nova_foto = salvar_imagem(
-            "foto_manga",
-            "personagens",
-            $nome
-        );
-
-        $fotos_novas_para_remover[] = $nova_foto;
-
-        if (!empty($personagem->foto_manga)) {
-            $fotos_antigas_para_apagar[] = $personagem->foto_manga;
-        }
-
-        $foto_manga = $nova_foto;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Nova foto de catálogo
-    |--------------------------------------------------------------------------
-    */
-    if (!empty($_FILES["foto_catalogo"]["name"])) {
-        $nova_foto = salvar_imagem(
-            "foto_catalogo",
-            "personagens",
-            $nome
-        );
-
-        $fotos_novas_para_remover[] = $nova_foto;
-
-        if (!empty($personagem->foto_catalogo)) {
-            $fotos_antigas_para_apagar[] = $personagem->foto_catalogo;
-        }
-
-        $foto_catalogo = $nova_foto;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Nova foto de biografia
-    |--------------------------------------------------------------------------
-    */
-    if (!empty($_FILES["foto_biografia"]["name"])) {
-        $nova_foto = salvar_imagem(
-            "foto_biografia",
-            "personagens",
-            $nome
-        );
-
-        $fotos_novas_para_remover[] = $nova_foto;
-
-        if (!empty($personagem->foto_biografia)) {
-            $fotos_antigas_para_apagar[] = $personagem->foto_biografia;
-        }
-
-        $foto_biografia = $nova_foto;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Atualiza os dados no banco usando a classe
-    |--------------------------------------------------------------------------
-    */
-    $personagemModel->editar(
+    editar(
+        $pdo, 
         $personagem_id,
         $usuario_id,
         [
@@ -189,14 +119,11 @@ try {
         $parametros["parte_id"] = $parte_id;
     }
 
-    header(
-        "Location: index.php?"
-        . http_build_query($parametros)
-    );
+    header("Location: index.php?" . http_build_query($parametros));
     exit;
 
 } catch (Throwable $erro) {
-    
+
     foreach ($fotos_novas_para_remover as $foto_nova) {
         try {
             deletar_arquivo($foto_nova);
@@ -215,9 +142,6 @@ try {
         $parametros["parte_id"] = $parte_id;
     }
 
-    header(
-        "Location: index.php?"
-        . http_build_query($parametros)
-    );
+    header("Location: index.php?" . http_build_query($parametros));
     exit;
 }
