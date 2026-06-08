@@ -1,5 +1,4 @@
 <?php 
-
 include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
 include_once "../../src/functions/upload.php";

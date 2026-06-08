@@ -53,6 +53,7 @@ if (!$personagem | !$personagens_partes) {
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

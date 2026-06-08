@@ -1,7 +1,7 @@
 <?php
 
-function carregar_env(string $caminho): void
-{
+function carregar_env(string $caminho): void {
+    
     if (!file_exists($caminho)) {
         return;
     }

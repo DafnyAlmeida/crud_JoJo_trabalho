@@ -37,11 +37,11 @@ if (!$referencia) {
 }
 
 $parte_id = (int) $referencia->parte_id;
+
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,11 +113,8 @@ $parte_id = (int) $referencia->parte_id;
 </head>
 
 <body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
-
     <!-- Caminho da página -->
         <nav class="mb-4 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
@@ -215,7 +212,7 @@ $parte_id = (int) $referencia->parte_id;
                         </div>
 
                         <p class="text-right text-xs font-semibold text-jojo-dark">
-                            <?= escapar($referencia->tipo); ?>
+                            <?= escapar(ucwords($referencia->tipo)); ?>
                         </p>
                     </div>
 
@@ -261,10 +258,7 @@ $parte_id = (int) $referencia->parte_id;
                 <i class="fa-solid fa-pencil"></i>
                 Editar
             </a>
-
         </section>
-
     </main>
-
 </body>
 </html>

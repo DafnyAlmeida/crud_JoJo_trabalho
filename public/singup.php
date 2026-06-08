@@ -10,14 +10,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
     $senha = $_POST["senha"];
 
     try {
+        // trim - remove espaços
+        // str - letras minusculas
+        // ucwoeds - coloca primeiro letra maiscula
         $email = strtolower(trim($_POST['email']));
         $senha = trim($_POST["senha"]);
         $nome = ucwords(strtolower(trim($_POST['nome'])));
 
+        // Verifica se esta vazio
         if (empty($nome) || empty($email) || empty($senha)) {
             throw new Exception("Preencha todos os campos");
         }
 
+        // Verifica se o campo é valido de acordo com um tipo
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Email inválido.");
         }
@@ -53,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         $erro = "Erro interno, pedimos desculpa";
     }
 };
+
 ?>
 
 <!DOCTYPE html>
@@ -63,17 +69,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
     <title>Criar conta | JoJo Archive</title>
     <link rel="icon" type="image/png" href="assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -122,17 +130,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 </head>
 
 <body class="min-h-screen font-body text-jojo-dark">
-
     <main class="flex min-h-screen items-center justify-center px-5 py-8">
-
         <section class="grid w-full max-w-[1040px] overflow-hidden rounded-[26px] border border-jojo-border bg-white shadow-card lg:grid-cols-[1fr_1fr]">
 
-            <!-- Formulário -->
+            <!-- Formulário - lado esquerdo -->
             <div class="flex min-h-[560px] items-center justify-center px-6 py-8 md:px-10">
-
                 <div class="w-full max-w-[390px]">
-
-                    <!-- Logo no topo -->
+                    <!-- Logo -->
                     <div class="mb-7 text-center">
                         <img
                             src="assets/img/login_singup/logo.png"
@@ -245,11 +249,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
                             Entrar
                         </a>
                     </p>
-
                 </div>
             </div>
 
-            <!-- Lado direito com imagem de fundo -->
+            <!-- Lado direito -->
             <div class="banner-jojos relative hidden min-h-[560px] overflow-hidden p-8 lg:flex lg:flex-col lg:justify-between">
 
                 <div class="relative z-10">
@@ -287,9 +290,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
                     ✦
                 </div>
             </div>
-
         </section>
-
     </main>
 
     <script>
@@ -309,6 +310,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
             iconeSenha.classList.add("fa-eye");
         }
     </script>
-
 </body>
 </html>

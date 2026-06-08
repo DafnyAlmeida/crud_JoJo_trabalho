@@ -4,6 +4,7 @@ include_once "../src/includes/bloqueio.php";
 include_once "../src/functions/gerais.php";
 
 $usuario_id = $_SESSION["usuario_id"];
+// Função que retorna um array com o total de stands, perso e refere por parte
 $totaisPorParte = listarTotaisPorParte($pdo, $usuario_id);
 
 $partes = [
@@ -108,12 +109,13 @@ $partes = [
     ]
 ];
 
+// O & indica que a variavel parte alterada tambem altera no array original
 foreach ($partes as &$parte) {
-    $idParte = (int) $parte["id"];
+    $parte_id = (int) $parte["id"];
 
-    $parte["stands"] = $totaisPorParte[$idParte]["stands"] ?? 0;
-    $parte["personagens"] = $totaisPorParte[$idParte]["personagens"] ?? 0;
-    $parte["referencias"] = $totaisPorParte[$idParte]["referencias"] ?? 0;
+    $parte["stands"] = $totaisPorParte[$parte_id]["stands"] ?? 0;
+    $parte["personagens"] = $totaisPorParte[$parte_id]["personagens"] ?? 0;
+    $parte["referencias"] = $totaisPorParte[$parte_id]["referencias"] ?? 0;
 }
 
 unset($parte);
@@ -122,26 +124,26 @@ unset($parte);
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>JoJo Dex</title>
-    
     <link rel="icon" type="image/png" href="assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -189,14 +191,11 @@ unset($parte);
 </head>
 
 <body class="min-h-screen bg-jojo-bg font-body text-jojo-dark">
-
     <?php include_once "../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1500px] px-10 pb-2 pt-5">
 
         <!-- Banner principal -->
         <section class="relative min-h-[265px] overflow-hidden rounded-[22px] border border-purple-100 shadow-soft">
-
             <div class="absolute inset-0 bg-gradient-to-r from-[#6535ac] via-[#7746c0] to-[#a684dd]"></div>
 
             <img
@@ -272,7 +271,6 @@ unset($parte);
                         </div>
                     </div>
 
-
                     <div class="grid grid-cols-3 divide-x divide-jojo-border border-b border-jojo-border bg-white px-2 py-3">
                         <div class="flex flex-col items-center justify-center gap-1">
                             <span class="text-[10px] font-medium text-[#857a96]">Stands</span>
@@ -315,7 +313,6 @@ unset($parte);
             <?php endforeach; ?>
         </section>
     </main>
-
-    <?php require_once "../src/includes/footer.php"; ?>
+<?php require_once "../src/includes/footer.php"; ?>
 </body>
 </html>

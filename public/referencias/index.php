@@ -211,9 +211,7 @@ $temas_referencias = [
 </head>
 
 <body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
@@ -355,13 +353,9 @@ $temas_referencias = [
                             </div>
                         </div>
                     </article>
-
                 <?php endforeach; ?>
-
             </section>
-
         <?php else: ?>
-
             <section class="flex min-h-[400px] flex-col items-center justify-center rounded-[20px] border border-dashed border-purple-200 bg-white px-8 text-center shadow-soft">
 
                 <span class="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-purple-50 text-3xl text-jojo-purple">
@@ -381,23 +375,16 @@ $temas_referencias = [
                     <i class="fa-solid fa-plus"></i>
                     Adicionar Referência
                 </a>
-
             </section>
-
         <?php endif; ?>
-
     </main>
 
     <!-- Footer com paginação -->
     <?php if ($total_referencias > 0): ?>
         <footer class="mt-auto border-t border-purple-100 bg-[#faf7ff] px-5 py-7">
-
             <div class="mx-auto flex max-w-[1450px] flex-wrap items-center justify-center gap-6">
-
                 <span class="linha-paginacao hidden h-px w-[240px] md:block"></span>
-
                 <i class="fa-solid fa-star hidden text-xs text-jojo-lilac md:block"></i>
-
                 <p class="font-title text-base font-semibold text-[#7d68a0]">
                     Página <?= escapar($pagina_atual); ?> de <?= escapar($total_paginas); ?>
                 </p>
@@ -435,16 +422,11 @@ $temas_referencias = [
                             <i class="fa-solid fa-chevron-right"></i>
                         </span>
                     <?php endif; ?>
-
                 </div>
-
                 <i class="fa-solid fa-star hidden text-xs text-jojo-lilac md:block"></i>
-
                 <span class="linha-paginacao hidden h-px w-[240px] md:block"></span>
-
             </div>
         </footer>
     <?php endif; ?>
-
 </body>
 </html>

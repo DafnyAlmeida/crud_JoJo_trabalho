@@ -91,30 +91,30 @@ $temas = [
     ]
 ];
 
-
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stands | <?= escapar($parte->nome); ?></title>
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -142,7 +142,6 @@ $temas = [
             }
         }
     </script>
-
     <style>
         body {
             background:
@@ -179,9 +178,7 @@ $temas = [
 </head>
 
 <body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
@@ -232,7 +229,6 @@ $temas = [
 
         <!-- Cards dos Stands -->
         <?php if (count($stands) > 0): ?>
-
             <section class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
                 <?php foreach ($stands as $indice => $stand): ?>
@@ -326,17 +322,11 @@ $temas = [
                                     <i class="fa-regular fa-trash-can text-[9px]"></i>
                                     Excluir
                                 </a>
-
                             </div>
-
                         </div>
-
                     </article>
-
                 <?php endforeach; ?>
-
             </section>
-
         <?php else: ?>
 
             <!-- Quando nenhum Stand estiver cadastrado -->
@@ -361,22 +351,16 @@ $temas = [
                 </a>
 
             </section>
-
         <?php endif; ?>
-
     </main>
 
     <!-- Paginação -->
     <?php if ($total_stands > 0): ?>
 
         <footer class="mt-auto border-t border-purple-100 bg-[#faf7ff] px-5 py-7">
-
             <div class="mx-auto flex max-w-[1450px] flex-wrap items-center justify-center gap-6">
-
                 <span class="linha-paginacao hidden h-px w-[240px] md:block"></span>
-
                 <i class="fa-solid fa-star hidden text-xs text-jojo-lilac md:block"></i>
-
                 <p class="font-title text-sm font-semibold text-[#7d68a0]">
                     Página <?= $pagina_atual; ?> de <?= $total_paginas; ?>
                 </p>
@@ -418,15 +402,10 @@ $temas = [
                     <?php endif; ?>
 
                 </div>
-
                 <i class="fa-solid fa-star hidden text-xs text-jojo-lilac md:block"></i>
-
                 <span class="linha-paginacao hidden h-px w-[240px] md:block"></span>
-
             </div>
-
         </footer>
-
     <?php endif; ?>
 </body>
 </html>

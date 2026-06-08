@@ -15,7 +15,7 @@ if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
     exit;
 }
 
-/* Buscar nome da parte */
+// Buscar nome da parte 
 $sql = "SELECT nome FROM partes WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -34,7 +34,7 @@ if (!filter_var($referencia_id, FILTER_VALIDATE_INT)) {
     exit;
 }
 
-/* Buscar referência */
+// Buscar referência
 $sql = "SELECT * FROM referencias WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -180,7 +180,7 @@ if (!$referencia) {
             <input type="hidden" name="parte_id" value="<?= htmlspecialchars($parte_id) ?>">
             <input type="hidden" name="imagem_antiga" value="<?= htmlspecialchars($referencia->imagem ?? '') ?>">
 
-            <!-- LADO ESQUERDO: IMAGEM -->
+            <!-- Lado esquerdo: imagem -->
             <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                 <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                     <i class="fa-regular fa-image"></i>
@@ -228,9 +228,8 @@ if (!$referencia) {
                 </div>
             </section>
 
-            <!-- LADO DIREITO: CAMPOS -->
+            <!-- Lado direito: campos -->
             <div class="space-y-5">
-
                 <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                     <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                         <i class="fa-regular fa-address-card"></i>
@@ -299,10 +298,8 @@ if (!$referencia) {
                         ><?= htmlspecialchars(trim($referencia->descricao ?? "")) ?></textarea>
                     </div>
                 </section>
-
             </div>
         </form>
-
     </main>
 
     <script>
@@ -326,6 +323,5 @@ if (!$referencia) {
             leitor.readAsDataURL(arquivo);
         }
     </script>
-
 </body>
 </html>

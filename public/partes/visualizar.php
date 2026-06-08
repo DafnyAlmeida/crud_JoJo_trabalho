@@ -57,25 +57,26 @@ $total_referencias = pegarTotal(
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= escapar($parte->nome); ?> | JoJo Archive</title>
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -107,9 +108,7 @@ $total_referencias = pegarTotal(
 </head>
 
 <body class="min-h-screen bg-jojo-bg font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-2 pt-6">
 
         <!-- Caminho da página -->
@@ -128,7 +127,6 @@ $total_referencias = pegarTotal(
 
         <!-- Banner principal -->
         <section class="relative min-h-[265px] overflow-hidden rounded-[22px] border border-purple-100 shadow-soft">
-
             <div class="absolute inset-0 bg-gradient-to-r from-[#6535ac] via-[#7746c0] to-[#a684dd]"></div>
             <img
                 src="../assets/img/visualizar_parte/parte-<?= $parte_id ?>.png"
@@ -157,7 +155,6 @@ $total_referencias = pegarTotal(
 
         <!-- Cards de gerenciamento -->
         <section class="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-3">
-
             <!-- Card Stands -->
             <article
                 class="card-gerenciar relative min-h-[375px] overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card"
@@ -252,7 +249,6 @@ $total_referencias = pegarTotal(
                 <img src="../assets/img/partes/parte-<?= $parte->id; ?>/personagem.png"
                     alt="Personagens"
                     class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
-
             </article>
 
             <!-- Card Referências -->
@@ -262,7 +258,6 @@ $total_referencias = pegarTotal(
 
                 <!-- Conteúdo do card -->
                 <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
-
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-book-open text-[30px]"
                             style="color: #3f88b7;"></i>
@@ -303,9 +298,7 @@ $total_referencias = pegarTotal(
                 <img src="../assets/img/partes/parte-<?= $parte->id; ?>/referencia.png"
                     alt="Referências"
                     class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
-
             </article>
-
         </section>
 
         <!-- Sinopse da Parte -->
@@ -324,7 +317,7 @@ $total_referencias = pegarTotal(
                 </p>
             </div>
 
-            <!-- Imagem lateral -->
+            <!-- Imagem lateral - logo da parte -->
             <img src="../assets/img/partes/parte-<?= $parte->id; ?>/sinopse.png"
                 alt="Logo de <?= escapar($parte->nome); ?>"
                 class="pointer-events-none absolute bottom-0 right-0 hidden h-[200px] w-[42%] object-contain object-center lg:block">

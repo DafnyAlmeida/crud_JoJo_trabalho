@@ -1,8 +1,6 @@
 <?php
 require_once "bloqueio.php";
-
 $nomeUsuario = $_SESSION['usuario_nome'] ?? 'Administrador';
-
 ?>
 
 <header class="h-[76px] w-full border-b border-jojo-border bg-white/90 backdrop-blur-sm relative z-[9998]">

@@ -226,13 +226,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     </style>
 </head>
-
 <body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark">
-
     <?php include_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
-
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
@@ -550,7 +546,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 </form>
 </main>
-
 <script>
     function trocarFotoCampo(evento, campo) {
         document.querySelectorAll(".foto-campo").forEach(function(item) {
@@ -592,6 +587,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         leitor.readAsDataURL(arquivo);
     }
+
 </script>
 </body>
 </html>

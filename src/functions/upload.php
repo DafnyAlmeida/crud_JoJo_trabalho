@@ -1,33 +1,40 @@
 <?php
 
-function caminho_publico()
-{
+// Pega o caminho da pasta public a partir da pasta atual
+function caminho_publico() {
     return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "public";
 }
 
-function caminho_uploads()
-{
+// Coloca uploads no final
+function caminho_uploads() {
     return caminho_publico() . DIRECTORY_SEPARATOR . "uploads" . DIRECTORY_SEPARATOR;
 }
 
-function criar_nome_pasta($nome_base)
-{
+// Cria um nome para a pasta tirando espaços e letras maisculas
+function criar_nome_pasta($nome_base) {
+    // Tira espaço
     $nome_pasta = trim((string) $nome_base);
 
+    // Tira acentos
     $convertido = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $nome_pasta);
     if ($convertido !== false) {
         $nome_pasta = $convertido;
     }
 
+    // Tudo minusculo
     $nome_pasta = mb_strtolower($nome_pasta, "UTF-8");
+
+    // Troca espaços por -
     $nome_pasta = preg_replace('/[^a-z0-9]+/', '-', $nome_pasta);
     $nome_pasta = trim($nome_pasta, '-');
 
+    // Verifica se ficou algo
     return $nome_pasta !== '' ? $nome_pasta : 'sem-nome';
 }
 
-function validar_imagem_enviada($arquivo, $campo)
-{
+// Vê se veio arquivo e se ele esta no padrão aceito
+function validar_imagem_enviada($arquivo, $campo) {
+    
     if (!is_array($arquivo) || !isset($arquivo['error'])) {
         throw new RuntimeException("A imagem {$campo} não foi enviada.");
     }
@@ -72,8 +79,9 @@ function validar_imagem_enviada($arquivo, $campo)
     return $tiposPermitidos[$mime];
 }
 
-function preparar_destino_upload($tipo_pasta, $nome_base)
-{
+// Cria a pasta onde as imagens serão salvas e verifica se ela já não existe
+function preparar_destino_upload($tipo_pasta, $nome_base) {
+
     $tipo_pasta = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $tipo_pasta);
 
     if ($tipo_pasta === '') {
@@ -100,8 +108,9 @@ function preparar_destino_upload($tipo_pasta, $nome_base)
     ];
 }
 
-function salvar_imagem($campo, $tipo_pasta, $nome_base)
-{
+// Salva uma única imagem enviada - retorna caminho para salvar no banco
+function salvar_imagem($campo, $tipo_pasta, $nome_base) {
+
     if (!isset($_FILES[$campo])) {
         throw new RuntimeException("A imagem {$campo} não chegou ao formulário.");
     }
@@ -120,8 +129,8 @@ function salvar_imagem($campo, $tipo_pasta, $nome_base)
     return $destino['banco'] . $novo_nome;
 }
 
-function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base)
-{
+// Percorre um array salvando as imagens enviadas - retorna caminho para salvar no banco
+function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base) {
     if (!isset($_FILES[$campo]['name'][$index])) {
         throw new RuntimeException("A imagem {$campo}[{$index}] não chegou ao formulário.");
     }
@@ -147,8 +156,9 @@ function salvar_imagem_array($campo, $index, $tipo_pasta, $nome_base)
     return $destino['banco'] . $novo_nome;
 }
 
-function caminho_fisico_publico($caminho)
-{
+// Pega um caminho do banco e coloca em pratica
+function caminho_fisico_publico($caminho) {
+
     $caminho = trim(str_replace('\\', '/', (string) $caminho));
     $publico = str_replace('\\', '/', caminho_publico());
 
@@ -156,7 +166,7 @@ function caminho_fisico_publico($caminho)
         return str_replace('/', DIRECTORY_SEPARATOR, $caminho);
     }
 
-    /* Compatibilidade com chamadas antigas usando ../../public/uploads/... */
+    // Compatibilidade com chamadas antigas usando ../../public/uploads/...
     $caminho = preg_replace('#^(?:\.\./)+public/#', '', $caminho);
     $caminho = ltrim($caminho, '/');
 
@@ -169,8 +179,9 @@ function caminho_fisico_publico($caminho)
         . str_replace('/', DIRECTORY_SEPARATOR, $caminho);
 }
 
-function deletar_arquivo($arquivo)
-{
+// Função para delatar um unico arquivo
+function deletar_arquivo($arquivo) {
+
     if (empty($arquivo)) {
         return;
     }
@@ -182,15 +193,16 @@ function deletar_arquivo($arquivo)
     }
 }
 
-function deletar_pasta($pasta)
-{
+// Função para deletar toda uma pasta
+function deletar_pasta($pasta) {
+
     if (empty($pasta)) {
         return;
     }
 
     $caminho = caminho_fisico_publico($pasta);
 
-    /* Permite passar uma imagem salva no banco para apagar sua pasta. */
+    // Permite passar uma imagem salva no banco para apagar sua pasta.
     if (is_file($caminho)) {
         $caminho = dirname($caminho);
     }

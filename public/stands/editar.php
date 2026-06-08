@@ -10,17 +10,12 @@ if (!isset($_GET["id_stand"])) {
 $stand_id = $_GET["id_stand"];
 $parte_id = $_GET["parte_id"] ?? null;
 
-if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
+if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT) || !filter_var($stand_id, FILTER_VALIDATE_INT)) {
     header("Location: index.php?status=parte_invalida");
     exit;
 }
 
-if (!filter_var($stand_id, FILTER_VALIDATE_INT)) {
-    header("Location: index.php?status=id_invalido");
-    exit;
-}
-
-/* Buscar stand */
+// Buscar stand 
 $sql = "SELECT * FROM stands WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -34,7 +29,7 @@ if (!$stand) {
     exit;
 }
 
-/* Buscar nome da parte */
+// Buscar nome da parte 
 $sql = "SELECT nome FROM partes WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -48,7 +43,7 @@ if (!$parte) {
     exit;
 }
 
-/* Buscar personagens */
+// Buscar personagens
 $sql = "SELECT DISTINCT p.id, p.nome 
         FROM personagens p 
         INNER JOIN personagens_partes pp ON p.id = pp.personagem_id 
@@ -64,7 +59,7 @@ $stmt->execute([
 
 $personagens = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-/* Buscar habilidades */
+// Buscar habilidades 
 $sql = "SELECT * FROM stand_habilidades WHERE stand_id = :stand_id";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -72,6 +67,7 @@ $stmt->execute([
 ]);
 
 $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
+
 ?>
 
 <!DOCTYPE html>
@@ -82,18 +78,20 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
     <title>Editar Stand</title>
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -145,9 +143,7 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 </head>
 
 <body class="min-h-screen font-body text-jojo-dark">
-
     <?php include_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
@@ -212,6 +208,7 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
             </div>
         </section>
 
+        <!-- Formulário -->
         <form 
             id="form-stand"
             action="processar_editar.php" 
@@ -222,7 +219,7 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
             <input type="hidden" name="id_stand" value="<?= (int) $stand->id ?>">
             <input type="hidden" name="parte_id" value="<?= (int) $parte_id ?>">
 
-            <!-- LADO ESQUERDO: FOTOS -->
+            <!-- Lado esquerdo: fotos -->
             <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                 <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                     <i class="fa-regular fa-image"></i>
@@ -340,9 +337,8 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
                 </div>
             </section>
 
-            <!-- LADO DIREITO: CAMPOS -->
+            <!-- Lado direito: campos -->
             <div class="space-y-5">
-
                 <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                     <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                         <i class="fa-regular fa-address-card"></i>
@@ -610,10 +606,8 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
                         <?php endforeach; ?>
                     </div>
                 </section>
-
             </div>
         </form>
-
     </main>
 
     <script>
@@ -660,8 +654,6 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
         window.modoFormulario = "editar";
         window.habilidadesIniciais = <?= count($habilidades) ?>;
     </script>
-
     <script src="../assets/js/adicionar_habilidade.js"></script>
-
 </body>
 </html>

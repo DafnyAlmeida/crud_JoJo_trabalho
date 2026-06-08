@@ -50,8 +50,7 @@ $stmt->execute([
 
 $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-function imagemStand(?string $caminho): string
-{
+function imagemStand(?string $caminho): string {
     $caminho = trim((string) $caminho);
 
     if ($caminho === "") {
@@ -77,28 +76,30 @@ if ($foto_anime !== "") {
 }
 
 $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gerais ?? "";
+
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= escapar($stand->nome); ?> | JoJo Archive</title>
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -156,11 +157,8 @@ $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gera
         }
     </style>
 </head>
-
 <body class="min-h-screen font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-4 pt-6">
 
         <!-- Caminho da página -->
@@ -271,7 +269,6 @@ $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gera
 
             <!-- Informações principais -->
             <article class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
-
                 <span class="inline-flex rounded-md bg-purple-100 px-3 py-1 text-[11px] font-semibold text-jojo-purple">
                     Stand
                 </span>
@@ -447,7 +444,6 @@ $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gera
                                     </div>
                                 <?php endif; ?>
                             </div>
-
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -475,7 +471,6 @@ $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gera
                 Editar
             </a>
         </section>
-
     </main>
 
     <?php require_once "../../src/includes/footer.php"; ?>

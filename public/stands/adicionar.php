@@ -11,7 +11,7 @@ if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
     exit;
 }
 
-/* Buscar nome da parte */
+// Buscar nome da parte 
 $sql = "SELECT nome FROM partes WHERE id = :id LIMIT 1";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -25,6 +25,7 @@ if (!$parte) {
     exit;
 }
 
+// Função que retorna personagens sem stands
 $personagens = buscarPersonagensDisponiveis($pdo);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -70,8 +71,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ":tipo" => $_POST["tipo"]
         ]);
 
+        // Pega o id da ultima inserção
         $stand_id = $pdo->lastInsertId();
 
+        // Verifica se teve alguma habilidade cadastrada
         if (!empty($_POST["habilidade_nome"]) && is_array($_POST["habilidade_nome"])) {
             foreach ($_POST["habilidade_nome"] as $index => $nome_habilidade) {
                 $descricao_habilidade = $_POST["habilidade_descricao"][$index] ?? "";
@@ -116,6 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo $e->getMessage();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -126,18 +130,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Adicionar Stand</title>
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Icon Awesome -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer">
 
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -187,11 +193,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-
 <body class="min-h-screen font-body text-jojo-dark">
-
     <?php include_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
@@ -256,6 +259,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </section>
 
+        <!-- Formulário -->
         <form 
             id="form-stand"
             action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" 
@@ -265,7 +269,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         >
             <input type="hidden" name="parte_id" value="<?= htmlspecialchars($parte_id) ?>">
 
-            <!-- LADO ESQUERDO: FOTOS -->
+            <!-- Lado esquerdo: fotos -->
             <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                 <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                     <i class="fa-regular fa-image"></i>
@@ -381,9 +385,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </section>
 
-            <!-- LADO DIREITO: CAMPOS -->
+            <!-- Lado direito: campos -->
             <div class="space-y-5">
-
                 <section class="rounded-2xl border border-jojo-border bg-white/85 p-5 shadow-sm">
                     <h2 class="mb-4 flex items-center gap-2 font-title text-lg font-bold text-jojo-purple">
                         <i class="fa-regular fa-address-card"></i>
@@ -511,10 +514,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </p>
                     </div>
                 </section>
-
             </div>
         </form>
-
     </main>
 
     <script>
@@ -559,13 +560,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             leitor.readAsDataURL(arquivo);
         }
     </script>
-
     <script>
         window.modoFormulario = "adicionar";
         window.habilidadesIniciais = 0;
     </script>
-
     <script src="../assets/js/adicionar_habilidade.js"></script>
-
 </body>
 </html>
