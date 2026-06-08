@@ -385,7 +385,7 @@ $temas = [
                 </p>
 
                 <a href="adicionar.php?parte_id=<?= $parte_id; ?>"
-                    class="mt-7 flex h-12 items-center justify-center gap-3 rounded-xl bg-jojo-purple px-7 text-sm font-semibold text-white transition hover:brightness-110">
+                    class="mt-7 flex h-12 items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-7 text-sm font-semibold text-white transition hover:brightness-110">
                     <i class="fa-solid fa-plus"></i>
                     Adicionar Personagem
                 </a>

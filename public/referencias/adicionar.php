@@ -166,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="flex gap-3">
                 <button type="submit" form="form-referencia"
-                    class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-button transition hover:bg-purple-700">
+                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-5 py-2.5 text-sm font-bold text-white shadow-button transition hover:bg-purple-700">
                     <i class="fa-regular fa-floppy-disk"></i>
                     Salvar
                 </button>

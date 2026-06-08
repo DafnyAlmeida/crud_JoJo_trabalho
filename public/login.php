@@ -159,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
                     <!-- Logo -->
                     <div class="mb-7 text-center">
                         <img
-                            src="assets/img/login_singup/logo.png"
+                            src="assets/img/logo.png"
                             alt="Logo JoJo Archive"
                             class="mx-auto mb-4 h-16 w-16 rounded-2xl object-contain shadow-soft"
                         >

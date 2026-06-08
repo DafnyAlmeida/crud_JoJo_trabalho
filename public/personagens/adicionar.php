@@ -27,12 +27,15 @@ if (!$parte) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $nome = trim($_POST["nome"] ?? "");
+
     if ($nome === "") {
         die("Erro: nome do personagem não foi enviado.");
     }
+    
     if (!isset($_POST["parte_id"]) || !filter_var($_POST["parte_id"], FILTER_VALIDATE_INT)) {
         die("Erro: parte inválida.");
     }
+
     foreach (["foto_anime", "foto_manga", "foto_catalogo", "foto_biografia"] as $campoFoto) {
         if (!isset($_FILES[$campoFoto])) {
             die("Erro: o campo {$campoFoto} não chegou ao PHP.");
@@ -238,9 +241,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <a href="href="index.php?parte_id=<?= $parte_id; ?>
+            <a href="../partes/visualizar.php?id=<?= $parte_id; ?>"
                 class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 <?= escapar($parte->nome); ?>
+            </a>
+
+            <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
+
+            <a href="index.php?parte_id=<?= $parte_id; ?>"
+                class="font-semibold text-[#665387] transition hover:text-jojo-purple">
+                Personagens
             </a>
 
             <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
@@ -268,7 +278,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
             </div>
             <button type="submit" form="form-personagem"
-                class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-200 transition hover:bg-purple-700">
+                class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-200 transition hover:bg-purple-700">
                 <i class="fa-regular fa-floppy-disk"></i>
                 Salvar
             </button>
