@@ -142,12 +142,11 @@ $temas = [
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Personagens | <?= escapar($parte->nome); ?></title>
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -228,10 +227,10 @@ $temas = [
 
     <?php require_once "../../src/includes/header.php"; ?>
 
-    <main class="mx-auto w-full max-w-[1450px] flex-1 px-5 pb-10 pt-7 md:px-7">
+    <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
-        <nav class="mb-8 flex flex-wrap items-center gap-4 text-xs md:text-sm">
+        <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
                 class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 Todas as Partes
@@ -246,39 +245,39 @@ $temas = [
 
             <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <span class="font-semibold text-[#665387]">
+            <span class="font-semibold text-jojo-purple">
                 Personagens
             </span>
         </nav>
 
         <!-- Cabeçalho -->
         <section class="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-
             <div class="flex items-center gap-4">
                 <span class="flex h-11 w-11 items-center justify-center rounded-xl border border-purple-100 bg-white text-xl text-jojo-purple shadow-soft">
                     <i class="fa-solid fa-user-group"></i>
                 </span>
 
-                <h1 class="font-title text-xl font-bold text-jojo-dark md:text-[25px]">
-                    Meus Personagens
-                    <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
-                </h1>
+                <div>
+                    <h1 class="font-title text-xl font-bold text-jojo-dark md:text-[25px]">
+                        Meus Personagens
+                        <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
+                    </h1>
+                    <p class="mt-1 text-xs font-medium text-[#887d98]">
+                        Página <?= escapar($pagina_atual); ?> de <?= escapar($total_paginas); ?>
+                    </p>
+                </div>
             </div>
 
             <a href="adicionar.php?parte_id=<?= $parte_id; ?>"
-            class="flex h-[50px] items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#df438d] to-[#7447ca] px-9 text-[13px] font-semibold text-white shadow-button transition hover:brightness-110">
-
+            class="flex h-[50px] items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-9 text-[13px] font-semibold text-white shadow-button transition hover:brightness-110">
                 <i class="fa-solid fa-plus"></i>
-
                 Novo Personagem
             </a>
         </section>
 
         <!-- Cards -->
         <?php if (count($personagens) > 0): ?>
-
             <section class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
                 <?php foreach ($personagens as $indice => $personagem): ?>
                     <?php $tema = $temas[$indice % count($temas)]; ?>
 
@@ -287,23 +286,6 @@ $temas = [
                         <!-- Imagem -->
                         <div class="relative h-[270px] overflow-hidden border-b border-jojo-border"
                             style="background: linear-gradient(135deg, #ffffff 0%, <?= escapar($tema["clara"]); ?> 100%);">
-
-                            <!-- Ícone superior -->
-                            <span class="absolute left-5 top-5 z-20 flex h-11 w-11 items-center justify-center text-[27px]"
-                                style="color: <?= escapar($tema["cor"]); ?>;">
-                                <i class="<?= escapar($tema["icone"]); ?>"></i>
-                            </span>
-
-                            <!-- Elementos decorativos -->
-                            <i class="<?= escapar($tema["decoracao"]); ?> absolute right-5 top-6 text-[42px] opacity-[0.12]"
-                                style="color: <?= escapar($tema["cor"]); ?>;"></i>
-
-                            <i class="fa-regular fa-star absolute left-8 bottom-12 text-[72px] opacity-[0.10]"
-                                style="color: <?= escapar($tema["cor"]); ?>;"></i>
-
-                            <i class="fa-solid fa-star absolute right-9 bottom-10 text-[19px] opacity-[0.15]"
-                                style="color: <?= escapar($tema["cor"]); ?>;"></i>
-
                             <?php if (!empty($personagem->foto_catalogo)): ?>
                                 <img src="../<?= escapar($personagem->foto_catalogo); ?>"
                                     alt="Foto de <?= escapar($personagem->nome); ?>"
@@ -357,7 +339,7 @@ $temas = [
                                     style="border-color: <?= escapar($tema["cor"]); ?>33; color: <?= escapar($tema["cor"]); ?>;">
 
                                     <i class="fa-regular fa-eye"></i>
-                                    Visualizar
+                                    Ver
                                 </a>
 
                                 <a href="editar.php?id_personagem=<?= $personagem->id; ?>&parte_id=<?= $parte_id; ?>"

@@ -1,4 +1,4 @@
-<footer class="mt-6 border-t border-jojo-border bg-purple-50/40 px-8 py-2">
+<footer class="mt-6 border-t border-jojo-border bg-purple-50/40 px-8 py-4">
     <div class="mx-auto flex max-w-[1440px] items-center justify-center md:grid md:grid-cols-[1fr_auto_1fr]">
 
         <!-- Decoração esquerda -->

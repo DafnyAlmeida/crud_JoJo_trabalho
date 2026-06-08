@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
     $senha = $_POST["senha"];
 
     try {
-        $email = strtolower(trim($_POST['email'])); # Remove espaços e deixa tudo minusculo
+        $email = strtolower(trim($_POST['email']));
         $senha = trim($_POST["senha"]);
 
         $sql = "SELECT * FROM usuarios WHERE email = :email LIMIT 1";
@@ -30,12 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         header("Location: index.php?status=sucesso_login");
         exit;
 
-    } catch (Exception $e) { # Pega o erro vindo do throw new exeption
+    } catch (Exception $e) {
         $erro = $e->getMessage();
-        echo $erro; # Pega a mensagem de erro e seta na variavel
     } catch (PDOException $e) {
         $erro = "Erro interno, pedimos desculpa";
-    };
+    }
 };
 ?>
 
@@ -44,179 +43,252 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - JoJo's Bizarre Adventure - CRUD</title>
-    <link rel="stylesheet" href="assets/css/login_singup.css">
+    <title>Login | JoJo Dex</title>
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'jojo-purple': '#6B21A8',
-                        'jojo-purple-light': '#A855F7',
-                        'jojo-purple-bg': '#C4B5FD',
-                        'jojo-pink': '#EC4899',
-                        'jojo-pink-dark': '#BE185D',
-                        'jojo-rose': '#F43F5E',
+                        "jojo-dark": "#30204f",
+                        "jojo-purple": "#7045c9",
+                        "jojo-lilac": "#a77be5",
+                        "jojo-pink": "#dd438f",
+                        "jojo-bg": "#fbf9ff",
+                        "jojo-border": "#ece4fa"
                     },
                     fontFamily: {
-                        'cinzel': ['Cinzel Decorative', 'serif'],
-                        'cinzel-reg': ['Cinzel', 'serif'],
-                        'lato': ['Lato', 'sans-serif'],
-                    },
-                    backgroundImage: {
-                        'jojo-gradient': 'linear-gradient(135deg, #9333ea 0%, #c084fc 50%, #ddd6fe 100%)',
-                        'btn-gradient': 'linear-gradient(90deg, #ec4899 0%, #f43f5e 100%)',
-                        'panel-gradient': 'linear-gradient(180deg, #f5f3ff 0%, #fdf4ff 100%)',
+                        title: ["Playfair Display", "Georgia", "serif"],
+                        body: ["Inter", "Arial", "sans-serif"]
                     },
                     boxShadow: {
-                        'jojo': '0 25px 60px rgba(107, 33, 168, 0.35)',
-                        'input': '0 2px 8px rgba(168, 85, 247, 0.12)',
-                        'btn': '0 8px 24px rgba(236, 72, 153, 0.45)',
+                        card: "0 5px 18px rgba(66, 38, 102, 0.08)",
+                        soft: "0 3px 14px rgba(66, 38, 102, 0.06)",
+                        button: "0 6px 15px rgba(112, 69, 201, 0.20)"
                     }
                 }
             }
         }
     </script>
+
+    <style>
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(113, 69, 201, 0.08), transparent 34%),
+                radial-gradient(circle at bottom right, rgba(221, 67, 143, 0.06), transparent 30%),
+                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
+        }
+
+        .banner-jojos {
+            background-image:
+                linear-gradient(90deg, rgba(48, 32, 79, 0.92), rgba(112, 69, 201, 0.80), rgba(221, 67, 143, 0.70)),
+                url("assets/img/login_singup/todos-jojos.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
 
-    <main class="w-full h-[calc(100dvh-40px)] rounded-3xl overflow-hidden shadow-jojo flex" style="min-height: 560px; background: rgba(255,255,255,0.08); backdrop-filter: blur(2px);">
+<body class="min-h-screen font-body text-jojo-dark">
 
-        <!-- Left: Artwork panel -->
-        <div class="hidden md:flex relative w-[50%] manga-bg overflow-hidden items-end justify-center max">
+    <main class="flex min-h-screen items-center justify-center px-5 py-8">
 
+        <section class="grid w-full max-w-[1040px] overflow-hidden rounded-[26px] border border-jojo-border bg-white shadow-card lg:grid-cols-[1fr_1fr]">
 
-            <!-- Sparkle stars -->
-            <!-- <div class="absolute top-10 left-10 text-purple-300 text-2xl opacity-70 animate-pulse">✦</div>
-            <div class="absolute top-1/3 right-8 text-purple-200 text-lg opacity-60" style="animation: twinkle 1.8s ease-in-out infinite;">✦</div>
-            <div class="absolute bottom-32 left-8 text-purple-300 text-xl opacity-50" style="animation: twinkle 2.4s ease-in-out infinite;">✦</div> -->
+            <!-- Lado esquerdo com imagem de fundo -->
+            <div class="banner-jojos relative hidden min-h-[560px] overflow-hidden p-8 lg:flex lg:flex-col lg:justify-between">
 
-        </div>
+                <div class="relative z-10">
+                    <img
+                        src="assets/img/logo.png"
+                        alt="Logo JoJo Dex"
+                        class="mb-5 h-16 w-16 rounded-2xl object-contain"
+                    >
 
-        <!-- Right: Login panel -->
-        <div class="panel flex-1 flex flex-col items-center justify-center px-10 py-12">
+                    <span class="inline-flex rounded-md bg-white/15 px-3 py-1 text-[11px] font-semibold text-white">
+                        Sistema CRUD
+                    </span>
 
-            <!-- Badge / Logo -->
-            <div class="badge-glow mb-4">
-                <img
-                    src="assets/img/login_singup/logo.png"
-                    alt="JoJo Archive Logo"
-                    class="w-20 h-20 object-contain"
-                />
-            </div>
+                    <h1 class="mt-4 font-title text-[42px] font-bold leading-tight text-white">
+                        JoJo Dex
+                    </h1>
 
-            <!-- Title -->
-            <h1 class="font-cinzel py-2 text-3xl font-black tracking-widest mb-1"
-                style="background: linear-gradient(90deg, #6b21a8, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                JOJO ARCHIVE
-            </h1>
-
-            <!-- CRUD badge -->
-            <div class="relative mb-5 flex items-center gap-3">
-                <span class="text-yellow-500 text-sm">✦ ✦</span>
-                <span class="bg-jojo-pink text-white font-cinzel-reg font-bold text-xs tracking-[0.25em] px-5 py-1.5 rounded-full shadow-btn">
-                    SISTEMA CRUD
-                </span>
-                <span class="text-yellow-500 text-sm">✦ ✦</span>
-            </div>
-
-            <!-- Subtitle -->
-            <p class="font-lato text-purple-500 text-sm mb-7 tracking-wide">
-                Entre na sua conta para continuar
-            </p>
-
-            <!-- Form -->
-            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post" class="w-full max-w-sm space-y-4">
-
-                <!-- Email -->
-                <div class="bg-white rounded-xl px-4 py-3 shadow-input border border-purple-100">
-                    <label for="email" class="block font-lato font-bold text-gray-700 text-xs mb-1.5 tracking-wide">Email</label>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-4 h-4 text-jojo-pink flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            placeholder="seu@email.com"
-                            required
-                            class="input-focus flex-1 font-lato text-sm text-gray-500 placeholder-gray-300 bg-transparent border-none focus:ring-0 p-0"
-                        />
-                    </div>
+                    <p class="mt-3 max-w-[340px] text-sm leading-7 text-purple-100">
+                        Gerencie partes, personagens, stands e referências em um só lugar.
+                    </p>
                 </div>
 
-                <!-- Senha -->
-                <div class="bg-white rounded-xl px-4 py-3 shadow-input border border-purple-100">
-                    <label for="senha" class="block font-lato font-bold text-gray-700 text-xs mb-1.5 tracking-wide">Senha</label>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-4 h-4 text-jojo-pink flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                        <input
-                            type="password"
-                            name="senha"
-                            id="senha"
-                            placeholder="••••••••••"
-                            required
-                            class="input-focus flex-1 font-lato text-sm text-gray-500 placeholder-gray-400 bg-transparent border-none focus:ring-0 p-0"
-                        />
-                        <button type="button" onclick="toggleSenha()" class="text-purple-300 hover:text-purple-500 transition-colors">
-                            <svg id="eye-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
+                <div class="relative z-10 rounded-2xl border border-white/20 bg-white/10 p-5">
+                    <div class="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
+                        <i class="fa-regular fa-star"></i>
+                        To be continued...
+                    </div>
+
+                    <p class="text-xs leading-6 text-purple-100">
+                        Acesse sua conta para continuar organizando o universo JoJo.
+                    </p>
+                </div>
+
+                <div class="absolute bottom-8 right-8 text-7xl text-white/10">
+                    ✦
+                </div>
+            </div>
+
+            <!-- Formulário -->
+            <div class="flex min-h-[560px] items-center justify-center px-6 py-8 md:px-10">
+
+                <div class="w-full max-w-[390px]">
+
+                    <!-- Logo no topo -->
+                    <div class="mb-7 text-center">
+                        <img
+                            src="assets/img/login_singup/logo.png"
+                            alt="Logo JoJo Archive"
+                            class="mx-auto mb-4 h-16 w-16 rounded-2xl object-contain shadow-soft"
+                        >
+
+                        <span class="mb-2 inline-flex rounded-md bg-purple-100 px-3 py-1 text-[11px] font-semibold text-jojo-purple">
+                            Bem-vindo de volta
+                        </span>
+
+                        <h2 class="font-title text-[30px] font-bold leading-none text-jojo-dark">
+                            Entrar na conta
+                        </h2>
+
+                        <p class="mt-2 text-[13px] leading-6 text-[#66567d]">
+                            Use seu email e senha para continuar.
+                        </p>
+                    </div>
+
+                    <?php if (!empty($erro)): ?>
+                        <div class="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                            <?= htmlspecialchars($erro); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post" class="space-y-4">
+
+                        <div>
+                            <label for="email" class="mb-1.5 block text-[12px] font-semibold text-[#473267]">
+                                Email
+                            </label>
+
+                            <div class="flex items-center gap-3 rounded-xl border border-jojo-border bg-white px-3 py-2.5 shadow-soft transition focus-within:border-jojo-lilac focus-within:ring-4 focus-within:ring-purple-100">
+                                <i class="fa-regular fa-envelope text-sm text-jojo-purple"></i>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    placeholder="seu@email.com"
+                                    required
+                                    class="w-full border-none bg-transparent text-[13px] text-[#433366] outline-none placeholder:text-slate-300 focus:ring-0"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="senha" class="mb-1.5 block text-[12px] font-semibold text-[#473267]">
+                                Senha
+                            </label>
+
+                            <div class="flex items-center gap-3 rounded-xl border border-jojo-border bg-white px-3 py-2.5 shadow-soft transition focus-within:border-jojo-lilac focus-within:ring-4 focus-within:ring-purple-100">
+                                <i class="fa-solid fa-lock text-sm text-jojo-purple"></i>
+
+                                <input
+                                    type="password"
+                                    name="senha"
+                                    id="senha"
+                                    placeholder="••••••••"
+                                    required
+                                    class="w-full border-none bg-transparent text-[13px] text-[#433366] outline-none placeholder:text-slate-300 focus:ring-0"
+                                >
+
+                                <button type="button" onclick="toggleSenha()" class="text-jojo-lilac transition hover:text-jojo-purple">
+                                    <i id="iconeSenha" class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3">
+                            <label class="flex cursor-pointer items-center gap-2 text-[12px] font-medium text-[#66567d]">
+                                <input
+                                    type="checkbox"
+                                    id="lembrar"
+                                    name="lembrar"
+                                    class="h-4 w-4 rounded border-purple-200 text-jojo-purple focus:ring-jojo-purple"
+                                >
+                                Lembrar de mim
+                            </label>
+
+                            <a href="#" class="text-[12px] font-semibold text-jojo-purple transition hover:text-jojo-pink">
+                                Esqueci a senha
+                            </a>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#9665dc] text-sm font-bold text-white shadow-button transition hover:opacity-95"
+                        >
+                            Entrar
+                            <i class="fa-solid fa-angle-right text-xs"></i>
                         </button>
+
+                    </form>
+
+                    <div class="mt-6 flex items-center gap-3">
+                        <span class="h-px flex-1 bg-jojo-border"></span>
+                        <i class="fa-solid fa-star text-[10px] text-jojo-lilac"></i>
+                        <span class="h-px flex-1 bg-jojo-border"></span>
                     </div>
+
+                    <p class="mt-5 text-center text-[13px] text-[#66567d]">
+                        Ainda não tem uma conta?
+                        <a href="singup.php" class="font-bold text-jojo-purple transition hover:text-jojo-pink">
+                            Criar conta
+                        </a>
+                    </p>
+
                 </div>
-
-                <!-- Lembrar de mim -->
-                <div class="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        id="lembrar"
-                        name="lembrar"
-                        class="w-4 h-4 rounded border-purple-300 text-jojo-pink focus:ring-jojo-pink cursor-pointer"
-                    />
-                    <label for="lembrar" class="font-lato text-sm text-gray-600 cursor-pointer select-none">
-                        Lembrar de mim
-                    </label>
-                </div>
-
-                <!-- Botão Entrar -->
-                <button
-                    type="submit"
-                    class="btn-login w-full py-4 rounded-2xl text-white font-cinzel-reg font-bold tracking-[0.2em] text-sm flex items-center justify-center gap-3 shadow-btn"
-                >
-                    <span class="text-pink-200 text-xs">✦</span>
-                    ENTRAR
-                    <span class="text-lg">→</span>
-                </button>
-
-            </form>
-
-            <!-- Links -->
-            <div class="mt-5 flex flex-col items-center gap-3 w-full max-w-sm">
-                <a href="" class="font-lato text-sm text-purple-500 underline underline-offset-2 hover:text-jojo-pink transition-colors decoration-purple-300">
-                    Esqueci minha senha
-                </a>
-
-                <div class="divider-star w-full text-purple-400 text-xs">
-                    <span>✦</span>
-                </div>
-
-                <a href="singup.php" class="font-lato text-sm text-purple-500 underline underline-offset-2 hover:text-jojo-pink transition-colors decoration-purple-300">
-                    Criar conta
-                </a>
             </div>
-        </div>
+
+        </section>
+
     </main>
-    <script src="assets/js/login_singup.js"></script>
+
+    <script>
+        function toggleSenha() {
+            const campoSenha = document.getElementById("senha");
+            const iconeSenha = document.getElementById("iconeSenha");
+
+            if (campoSenha.type === "password") {
+                campoSenha.type = "text";
+                iconeSenha.classList.remove("fa-eye");
+                iconeSenha.classList.add("fa-eye-slash");
+                return;
+            }
+
+            campoSenha.type = "password";
+            iconeSenha.classList.remove("fa-eye-slash");
+            iconeSenha.classList.add("fa-eye");
+        }
+    </script>
+
 </body>
 </html>

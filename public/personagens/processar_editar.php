@@ -23,9 +23,12 @@ $nome = trim((string) ($_POST["nome"] ?? ""));
 $biografia = trim((string) ($_POST["biografia"] ?? ""));
 $infor_gerais = trim((string) ($_POST["infor_gerais"] ?? ""));
 
+$idade = $_POST["idade"] ?? null;
+$papel = $_POST["papel"] ?? null;
+
 if ($nome === "") {
     header(
-        "Location: edit.php?"
+        "Location: editar.php?"
         . http_build_query([
             "id_personagem" => $personagem_id,
             "parte_id" => $parte_id,
@@ -52,7 +55,6 @@ $foto_catalogo = $personagem->foto_catalogo;
 $foto_biografia = $personagem->foto_biografia;
 
 $fotos_antigas_para_apagar = [];
-
 $fotos_novas_para_remover = [];
 
 try {
@@ -106,6 +108,21 @@ try {
             "infor_gerais" => $infor_gerais
         ]
     );
+
+    $sql = "UPDATE personagens_partes
+            SET idade = :idade,
+                papel = :papel
+            WHERE personagem_id = :personagem_id
+            AND parte_id = :parte_id";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        ":idade" => $idade,
+        ":papel" => $papel,
+        ":personagem_id" => $personagem_id,
+        ":parte_id" => $parte_id
+    ]);
 
     foreach ($fotos_antigas_para_apagar as $foto_antiga) {
         deletar_arquivo($foto_antiga);

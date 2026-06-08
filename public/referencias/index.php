@@ -126,6 +126,7 @@ $temas_referencias = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Referências | <?= escapar($parte->nome); ?></title>
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -213,10 +214,10 @@ $temas_referencias = [
 
     <?php require_once "../../src/includes/header.php"; ?>
 
-    <main class="mx-auto w-full max-w-[1450px] flex-1 px-5 pb-10 pt-7 md:px-7">
+    <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
-        <nav class="mb-8 flex flex-wrap items-center gap-4 text-xs md:text-sm">
+        <nav class="mb-4 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
                 class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 Todas as Partes
@@ -231,14 +232,13 @@ $temas_referencias = [
 
             <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <span class="font-semibold text-[#665387]">
+            <span class="font-semibold text-jojo-purple">
                 Referências
             </span>
         </nav>
 
         <!-- Cabeçalho -->
         <section class="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-
             <div class="flex items-center gap-4">
                 <span class="flex h-11 w-11 items-center justify-center rounded-xl border border-purple-100 bg-white text-xl text-jojo-purple shadow-soft">
                     <i class="fa-solid fa-book-open"></i>
@@ -249,7 +249,6 @@ $temas_referencias = [
                         Minhas Referências
                         <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
                     </h1>
-
                     <p class="mt-1 text-xs font-medium text-[#887d98]">
                         Página <?= escapar($pagina_atual); ?> de <?= escapar($total_paginas); ?>
                     </p>
@@ -257,8 +256,7 @@ $temas_referencias = [
             </div>
 
             <a href="adicionar.php?parte_id=<?= escapar($parte_id); ?>"
-                class="flex h-[50px] items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#df438d] to-[#7447ca] px-9 text-[13px] font-semibold text-white shadow-button transition hover:brightness-110">
-
+                class="flex h-[50px] items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-9 text-[13px] font-semibold text-white shadow-button transition hover:brightness-110">
                 <i class="fa-solid fa-plus"></i>
                 Nova Referência
             </a>
@@ -271,17 +269,10 @@ $temas_referencias = [
 
                 <?php foreach ($referencias as $indice => $referencia): ?>
                     <?php $tema = $temas_referencias[$indice % count($temas_referencias)]; ?>
-
                     <article class="card-referencia overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card">
-
                         <a href="visualizar.php?id_referencia=<?= escapar($referencia->id); ?>&parte_id=<?= escapar($parte_id); ?>">
                             <div class="relative h-[210px] overflow-hidden border-b border-jojo-border"
                                 style="background: linear-gradient(135deg, #ffffff 0%, <?= escapar($tema["clara"]); ?> 100%);">
-
-                                <span class="absolute left-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 text-[20px] shadow-soft"
-                                    style="color: <?= escapar($tema["cor"]); ?>;">
-                                    <i class="<?= escapar($tema["icone"]); ?>"></i>
-                                </span>
 
                                 <i class="<?= escapar($tema["decoracao"]); ?> absolute right-5 top-6 text-[38px] opacity-[0.12]"
                                     style="color: <?= escapar($tema["cor"]); ?>;"></i>
@@ -299,7 +290,6 @@ $temas_referencias = [
                                             style="color: <?= escapar($tema["cor"]); ?>;"></i>
                                     </div>
                                 <?php endif; ?>
-
                             </div>
                         </a>
 

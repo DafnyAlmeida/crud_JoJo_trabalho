@@ -61,8 +61,8 @@ $total_referencias = pegarTotal(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title><?= escapar($parte->nome); ?> | JoJo Archive</title>
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -110,40 +110,48 @@ $total_referencias = pegarTotal(
 
     <?php require_once "../../src/includes/header.php"; ?>
 
-    <main class="mx-auto w-full max-w-[1450px] px-5 pb-7 pt-6">
+    <main class="mx-auto w-full max-w-[1450px] px-10 pb-2 pt-6">
 
         <!-- Caminho da página -->
-        <nav class="mb-5 flex items-center gap-5 text-sm md:text-base">
+        <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
-                class="font-semibold text-jojo-purple transition hover:text-jojo-pink">
+                class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 Todas as Partes
             </a>
 
-            <i class="fa-solid fa-chevron-right text-xs text-jojo-lilac"></i>
+            <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <span class="font-medium text-jojo-dark">
+            <span class="font-semibold text-jojo-purple">
                 <?= escapar($parte->nome); ?>
             </span>
         </nav>
 
         <!-- Banner principal -->
-        <section
-            class="banner-parte relative flex min-h-[285px] items-center overflow-hidden rounded-[20px] border border-purple-100 px-8 shadow-soft md:min-h-[310px] md:px-16">
+        <section class="relative min-h-[265px] overflow-hidden rounded-[22px] border border-purple-100 shadow-soft">
 
-            <div class="relative z-10 max-w-[460px] text-white">
-                <div class="mb-5 flex items-center gap-2 text-xl text-pink-300">
-                    <i class="fa-solid fa-star text-sm"></i>
-                    <i class="fa-solid fa-star text-[10px]"></i>
-                    <i class="fa-solid fa-star text-xs"></i>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#6535ac] via-[#7746c0] to-[#a684dd]"></div>
+            <img
+                src="../assets/img/visualizar_parte/parte-<?= $parte_id ?>.png"
+                alt="<?= escapar($parte->nome); ?>"
+                class="absolute inset-0 h-full w-full object-cover object-center">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#6132aa]/95 via-[#6f40bb]/70 to-transparent"></div>
+
+            <div class="relative z-10 flex min-h-[265px] items-center px-10 py-10 md:px-16">
+                <div class="max-w-[460px] text-white">
+                    <div class="mb-5 flex items-center gap-2 text-xl text-pink-300">
+                        <i class="fa-solid fa-star text-sm"></i>
+                        <i class="fa-solid fa-star text-[10px]"></i>
+                        <i class="fa-solid fa-star text-xs"></i>
+                    </div>
+
+                    <h1 class="font-title text-4xl font-bold leading-tight md:text-[46px]">
+                        <?= escapar($parte->nome); ?>
+                    </h1>
+
+                    <p class="mt-4 max-w-[325px] text-sm leading-7 text-purple-100 md:text-base">
+                        Gerencie os registros desta parte do universo JoJo.
+                    </p>
                 </div>
-
-                <h1 class="font-title text-4xl font-bold leading-tight md:text-[46px]">
-                    <?= escapar($parte->nome); ?>
-                </h1>
-
-                <p class="mt-4 max-w-[325px] text-sm leading-7 text-purple-100 md:text-base">
-                    Gerencie os registros desta parte do universo JoJo.
-                </p>
             </div>
         </section>
 
@@ -160,21 +168,21 @@ $total_referencias = pegarTotal(
 
                     <div class="flex items-center gap-3">
                         <i class="fa-regular fa-star text-[30px]"
-                            style="color: #6534c5;"></i>
+                            style="color: #cf9e40;"></i>
 
                         <h2 class="font-title text-[29px] font-bold"
-                            style="color: #6534c5;">
+                            style="color: #cf9e40;">
                             Stands
                         </h2>
                     </div>
 
                     <p class="mt-5 font-title text-[48px] font-bold leading-none"
-                        style="color: #6534c5;">
+                        style="color: #cf9e40;">
                         <?= $total_stands; ?>
                     </p>
 
                     <p class="mt-2 text-xs font-semibold"
-                        style="color: #6534c5;">
+                        style="color: #cf9e40;">
                         stands registrados
                     </p>
 
@@ -185,17 +193,15 @@ $total_referencias = pegarTotal(
                     <div class="mt-auto pt-7">
                         <a href="../stands/index.php?parte_id=<?= $parte->id; ?>"
                             class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                            style="background: linear-gradient(90deg, #6534c5, #7647d4);">
-
+                            style="background: linear-gradient(90deg, #cf9e40, #edc268);">
                             Gerenciar Stands
-
-                            <i class="fa-solid fa-arrow-right-long"></i>
+                            <i class="fa-solid fa-angle-right text-sm"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Imagem do card -->
-                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/stands.png"
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/stand.png"
                     alt="Stands"
                     class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
 
@@ -208,7 +214,6 @@ $total_referencias = pegarTotal(
 
                 <!-- Conteúdo do card -->
                 <div class="relative z-20 flex min-h-[375px] flex-col px-7 pb-5 pt-7">
-
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-user text-[30px]"
                             style="color: #cc3782;"></i>
@@ -236,17 +241,15 @@ $total_referencias = pegarTotal(
                     <div class="mt-auto pt-7">
                         <a href="../personagens/index.php?parte_id=<?= $parte->id; ?>"
                             class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                            style="background: linear-gradient(90deg, #cc3782, #df478f);">
-
+                            style="background: linear-gradient(90deg, #cc3782, #ec77b2);">
                             Gerenciar Personagens
-
-                            <i class="fa-solid fa-arrow-right-long"></i>
+                            <i class="fa-solid fa-angle-right text-sm"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Imagem do card -->
-                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/personagens.png"
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/personagem.png"
                     alt="Personagens"
                     class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
 
@@ -262,21 +265,21 @@ $total_referencias = pegarTotal(
 
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-book-open text-[30px]"
-                            style="color: #6534c5;"></i>
+                            style="color: #3f88b7;"></i>
 
                         <h2 class="font-title text-[29px] font-bold"
-                            style="color: #6534c5;">
+                            style="color: #3f88b7;">
                             Referências
                         </h2>
                     </div>
 
                     <p class="mt-5 font-title text-[48px] font-bold leading-none"
-                        style="color: #6534c5;">
+                        style="color: #3f88b7;">
                         <?= $total_referencias; ?>
                     </p>
 
                     <p class="mt-2 text-xs font-semibold"
-                        style="color: #6534c5;">
+                        style="color: #3f88b7;">
                         referências registradas
                     </p>
 
@@ -287,17 +290,17 @@ $total_referencias = pegarTotal(
                     <div class="mt-auto pt-7">
                         <a href="../referencias/index.php?parte_id=<?= $parte->id; ?>"
                             class="flex h-[58px] w-full items-center justify-center gap-6 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-                            style="background: linear-gradient(90deg, #6534c5, #7650cf);">
+                            style="background: linear-gradient(90deg, #3f88b7, #6fb6dc);">
 
                             Gerenciar Referências
 
-                            <i class="fa-solid fa-arrow-right-long"></i>
+                            <i class="fa-solid fa-angle-right text-sm"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Imagem do card -->
-                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/referencias.png"
+                <img src="../assets/img/partes/parte-<?= $parte->id; ?>/referencia.png"
                     alt="Referências"
                     class="imagem-card pointer-events-none absolute bottom-[60px] right-0 z-10 h-[275px] w-[58%] object-contain object-bottom">
 
@@ -321,25 +324,12 @@ $total_referencias = pegarTotal(
                 </p>
             </div>
 
-            <!-- Decorações -->
-            <div class="pointer-events-none absolute right-[29%] top-8 hidden text-jojo-lilac lg:block">
-                <i class="fa-solid fa-star text-3xl opacity-80"></i>
-            </div>
-
-            <div class="pointer-events-none absolute right-[32%] top-20 hidden text-jojo-lilac lg:block">
-                <i class="fa-solid fa-star text-lg opacity-60"></i>
-            </div>
-
             <!-- Imagem lateral -->
             <img src="../assets/img/partes/parte-<?= $parte->id; ?>/sinopse.png"
-                alt="Personagens de <?= escapar($parte->nome); ?>"
-                class="pointer-events-none absolute bottom-0 right-0 hidden h-[255px] w-[42%] object-contain object-bottom lg:block">
+                alt="Logo de <?= escapar($parte->nome); ?>"
+                class="pointer-events-none absolute bottom-0 right-0 hidden h-[200px] w-[42%] object-contain object-center lg:block">
         </section>
-
     </main>
-
     <?php require_once "../../src/includes/footer.php"; ?>
-
 </body>
-
 </html>

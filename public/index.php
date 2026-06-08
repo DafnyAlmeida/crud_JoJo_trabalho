@@ -11,7 +11,7 @@ $partes = [
         "id" => 1,
         "numero" => "01",
         "nome" => "Phantom Blood",
-        "imagem" => "img/partes/parte-1.png",
+        "imagem" => "assets/img/partes_inicio/parte-1.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#7446c7",
         "cor_clara" => "#a874e5",
@@ -22,7 +22,7 @@ $partes = [
         "id" => 2,
         "numero" => "02",
         "nome" => "Battle Tendency",
-        "imagem" => "img/partes/parte-2.png",
+        "imagem" => "assets/img/partes_inicio/parte-2.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#df468d",
         "cor_clara" => "#ee76b0",
@@ -33,7 +33,7 @@ $partes = [
         "id" => 3,
         "numero" => "03",
         "nome" => "Stardust Crusaders",
-        "imagem" => "img/partes/parte-3.png",
+        "imagem" => "assets/img/partes_inicio/parte-3.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#7045c9",
         "cor_clara" => "#9565dd",
@@ -44,7 +44,7 @@ $partes = [
         "id" => 4,
         "numero" => "04",
         "nome" => "Diamond is Unbreakable",
-        "imagem" => "img/partes/parte-4.png",
+        "imagem" => "assets/img/partes_inicio/parte-4.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#d1a042",
         "cor_clara" => "#ecc767",
@@ -55,7 +55,7 @@ $partes = [
         "id" => 5,
         "numero" => "05",
         "nome" => "Golden Wind",
-        "imagem" => "img/partes/parte-5.png",
+        "imagem" => "assets/img/partes_inicio/parte-5.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#dc438c",
         "cor_clara" => "#ec77b2",
@@ -66,7 +66,7 @@ $partes = [
         "id" => 6,
         "numero" => "06",
         "nome" => "Stone Ocean",
-        "imagem" => "img/partes/parte-6.png",
+        "imagem" => "assets/img/partes_inicio/parte-6.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#4d9ac8",
         "cor_clara" => "#9d82e2",
@@ -77,7 +77,7 @@ $partes = [
         "id" => 7,
         "numero" => "07",
         "nome" => "Steel Ball Run",
-        "imagem" => "img/partes/parte-7.png",
+        "imagem" => "assets/img/partes_inicio/parte-7.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#cf9e40",
         "cor_clara" => "#edc268",
@@ -88,7 +88,7 @@ $partes = [
         "id" => 8,
         "numero" => "08",
         "nome" => "JoJolion",
-        "imagem" => "img/partes/parte-8.png",
+        "imagem" => "assets/img/partes_inicio/parte-8.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#7143c5",
         "cor_clara" => "#9970dc",
@@ -99,7 +99,7 @@ $partes = [
         "id" => 9,
         "numero" => "09",
         "nome" => "The JOJOLands",
-        "imagem" => "img/partes/parte-9.png",
+        "imagem" => "assets/img/partes_inicio/parte-9.png",
         "icone" => "fa-solid fa-star",
         "cor" => "#3f88b7",
         "cor_clara" => "#6fb6dc",
@@ -127,7 +127,9 @@ unset($parte);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>JoJo Archive</title>
+    <title>JoJo Dex</title>
+    
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -190,7 +192,7 @@ unset($parte);
 
     <?php include_once "../src/includes/header.php"; ?>
 
-    <main class="mx-auto w-full max-w-[1500px] px-5 pb-10 pt-5">
+    <main class="mx-auto w-full max-w-[1500px] px-10 pb-2 pt-5">
 
         <!-- Banner principal -->
         <section class="relative min-h-[265px] overflow-hidden rounded-[22px] border border-purple-100 shadow-soft">
@@ -198,9 +200,9 @@ unset($parte);
             <div class="absolute inset-0 bg-gradient-to-r from-[#6535ac] via-[#7746c0] to-[#a684dd]"></div>
 
             <img
-                src="img/banner-jojo.png"
+                src="assets/img/inicio/banner-jojo.png"
                 alt="Personagens de JoJo"
-                class="absolute inset-0 h-full w-full object-cover object-center">
+                class="absolute inset-0 h-full w-full object-cover object-top">
 
             <div class="absolute inset-0 bg-gradient-to-r from-[#6132aa]/95 via-[#6f40bb]/70 to-transparent"></div>
 
@@ -212,18 +214,13 @@ unset($parte);
             <div class="relative flex min-h-[265px] items-center px-10 py-10 md:px-16">
                 <div class="max-w-[420px] text-white">
                     <h1 class="font-title text-3xl font-bold leading-tight md:text-[42px]">
-                        Bem-vindo ao JoJo Dex - CRUD!
+                        Bem-vindo ao JoJo Dex!
                     </h1>
 
                     <p class="mt-4 max-w-[370px] text-base leading-relaxed text-purple-100 md:text-lg">
                         Escolha uma parte para gerenciar Stands, Personagens e Referências.
                     </p>
                 </div>
-            </div>
-
-            <div>
-                <!-- Colocar a imagem aqui -->
-                <img src="" alt="">
             </div>
         </section>
 
@@ -233,29 +230,26 @@ unset($parte);
                 Todas as Partes
                 <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
             </h2>
-
         </section>
 
         <!-- Cards das partes -->
         <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
             <?php foreach ($partes as $parte): ?>
                 <article
-                    class="card-parte overflow-hidden rounded-[18px] border border-jojo-border bg-white shadow-card transition duration-300">
-
+                    class="card-parte overflow-visible rounded-[18px] border border-jojo-border bg-white shadow-card transition duration-300">
                     <div
-                        class="relative h-[220px] overflow-hidden border-b border-jojo-border"
+                        class="relative h-[220px] overflow-visible border-b border-jojo-border"
                         style="background: linear-gradient(135deg, #ffffff 0%, <?= $parte['fundo']; ?> 100%);">
 
                         <div
-                            class="losango absolute left-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-sm shadow-sm"
-                            style="background-color: <?= $parte['cor']; ?>;">
+                            class="losango absolute left-8 top-7 z-20 flex h-11 w-11 items-center justify-center rounded-sm shadow-sm"
+                            style="background: linear-gradient(90deg, <?= $parte['cor']; ?> 0%, <?= $parte['cor_clara']; ?> 100%);">
                             <span class="font-title text-base font-bold text-white">
                                 <?= htmlspecialchars($parte["numero"]); ?>
                             </span>
                         </div>
 
-                        <div class="absolute left-5 top-[88px] z-20 w-[130px]">
+                        <div class="absolute left-8 top-[90px] z-20 w-[130px]">
                             <h3
                                 class="font-title text-[20px] font-bold leading-[1.05]"
                                 style="color: <?= $parte['cor']; ?>;">
@@ -271,16 +265,15 @@ unset($parte);
                         <img
                             src="<?= htmlspecialchars($parte["imagem"]); ?>"
                             alt="<?= htmlspecialchars($parte["nome"]); ?>"
-                            class="absolute bottom-0 right-0 z-10 h-[205px] w-[68%] object-contain object-bottom transition duration-500">
-
+                            class="absolute bottom-0 right-0 z-30 h-[265px] w-[75%] object-contain object-right-bottom transition duration-500">
                         <div
-                            class="absolute bottom-0 right-0 h-24 w-full opacity-20"
+                            class="absolute bottom-0 right-0 z-10 h-24 w-full opacity-20"
                             style="background: linear-gradient(to top, <?= $parte['cor']; ?>, transparent);">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 divide-x divide-jojo-border border-b border-jojo-border bg-white px-2 py-3">
 
+                    <div class="grid grid-cols-3 divide-x divide-jojo-border border-b border-jojo-border bg-white px-2 py-3">
                         <div class="flex flex-col items-center justify-center gap-1">
                             <span class="text-[10px] font-medium text-[#857a96]">Stands</span>
                             <span class="flex items-center gap-1 text-base font-bold"
@@ -307,7 +300,6 @@ unset($parte);
                                 <?= $parte["referencias"]; ?>
                             </span>
                         </div>
-
                     </div>
 
                     <div class="p-3">
@@ -315,21 +307,15 @@ unset($parte);
                             href="partes/visualizar.php?id=<?= $parte["id"]; ?>"
                             class="flex h-11 items-center justify-center gap-3 rounded-xl text-sm font-semibold text-white shadow-sm transition hover:brightness-105"
                             style="background: linear-gradient(90deg, <?= $parte['cor']; ?> 0%, <?= $parte['cor_clara']; ?> 100%);">
-
                             Abrir Parte
-
-                            <i class="fa-solid fa-arrow-right-long text-sm"></i>
+                            <i class="fa-solid fa-angle-right text-sm"></i>
                         </a>
                     </div>
-
                 </article>
             <?php endforeach; ?>
-
         </section>
-
     </main>
 
     <?php require_once "../src/includes/footer.php"; ?>
-
 </body>
 </html>

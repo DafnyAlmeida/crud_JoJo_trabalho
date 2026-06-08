@@ -46,6 +46,7 @@ $parte_id = (int) $referencia->parte_id;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= escapar($referencia->titulo); ?> | JoJo Archive</title>
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -115,52 +116,49 @@ $parte_id = (int) $referencia->parte_id;
 
     <?php require_once "../../src/includes/header.php"; ?>
 
-    <main class="mx-auto w-full max-w-[1050px] flex-1 px-5 pb-8 pt-5 md:px-6">
+    <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
-        <!-- Breadcrumb -->
-        <nav class="mb-5 flex flex-wrap items-center gap-3 text-[11px] font-semibold text-[#75658f] md:text-xs">
-
-            <a href="../index.php" class="transition hover:text-jojo-purple">
+    <!-- Caminho da página -->
+        <nav class="mb-4 flex flex-wrap items-center gap-4 text-xs md:text-sm">
+            <a href="../index.php"
+                class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 Todas as Partes
             </a>
 
-            <i class="fa-solid fa-chevron-right text-[9px] text-jojo-lilac"></i>
+            <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <a href="../partes/visualizar.php?id=<?= escapar($parte_id); ?>"
-                class="transition hover:text-jojo-purple">
-                <?= escapar($referencia->parte_nome ?? "Parte"); ?>
+            <a href="../partes/visualizar.php?id=<?= $parte_id; ?>"
+                class="font-semibold text-[#665387] transition hover:text-jojo-purple">
+                <?= escapar($referencia->parte_nome); ?>
             </a>
 
-            <i class="fa-solid fa-chevron-right text-[9px] text-jojo-lilac"></i>
+            <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <a href="index.php?parte_id=<?= escapar($parte_id); ?>"
-                class="transition hover:text-jojo-purple">
+            <a href="index.php?id=<?= $parte_id; ?>"
+                class="font-semibold text-[#665387] transition hover:text-jojo-purple">
                 Referências
             </a>
 
-            <i class="fa-solid fa-chevron-right text-[9px] text-jojo-lilac"></i>
+            <i class="fa-solid fa-chevron-right text-[10px] text-jojo-lilac"></i>
 
-            <span class="text-jojo-purple">
-                Ver Detalhes
+            <span class="font-semibold text-jojo-purple">
+               Ver detalhes
             </span>
-
         </nav>
 
-        <!-- Título -->
-        <section class="mb-5 flex items-center gap-3">
-
-            <span class="text-2xl text-jojo-lilac">✦</span>
-
-            <div>
-                <h1 class="font-title text-2xl font-bold text-jojo-dark md:text-[30px]">
-                    Ver Referência
-                </h1>
-
-                <p class="mt-1 text-xs font-medium text-[#887d98]">
-                    Informações cadastradas sobre esta referência.
-                </p>
+        <!-- Cabeçalho -->
+        <section class="mb-7 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+            <div class="flex items-center gap-4">
+                <div>
+                    <h1 class="font-title text-xl font-bold text-jojo-dark md:text-[25px]">
+                        Ver detalhes
+                        <span class="ml-1 text-sm text-jojo-lilac">✦✦</span>
+                    </h1>
+                    <p class="mt-1 text-xs font-medium text-[#887d98]">
+                        Informações cadastradas sobre esta referência.
+                    </p>
+                </div>
             </div>
-
         </section>
 
         <!-- Conteúdo principal -->
