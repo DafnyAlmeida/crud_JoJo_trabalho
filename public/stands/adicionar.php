@@ -245,12 +245,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="flex gap-3">
-                <a href="index.php?parte_id=<?= (int) $parte_id; ?>"
-                    class="inline-flex items-center gap-2 rounded-xl border border-jojo-border bg-white px-5 py-2.5 text-sm font-bold text-jojo-purple shadow-soft transition hover:bg-purple-50">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Voltar
-                </a>
-
                 <button type="submit" form="form-stand"
                     class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-button transition hover:bg-purple-700">
                     <i class="fa-regular fa-floppy-disk"></i>
