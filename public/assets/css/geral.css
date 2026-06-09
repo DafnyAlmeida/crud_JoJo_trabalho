@@ -1,0 +1,200 @@
+.body-login {
+    background:
+        radial-gradient(circle at top left, rgba(113, 69, 201, 0.08), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(221, 67, 143, 0.06), transparent 30%),
+        linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
+}
+
+.banner-jojos {
+    background-image:
+        linear-gradient(90deg, rgba(48, 32, 79, 0.92), rgba(112, 69, 201, 0.80), rgba(221, 67, 143, 0.70)),
+        url("../img/login_singup/todos-jojos.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* HOME */
+
+.losango {
+    transform: rotate(45deg);
+}
+
+.losango span {
+    transform: rotate(-45deg);
+}
+
+.card-parte:hover img {
+    transform: scale(1.06);
+}
+
+.card-parte:hover {
+    transform: translateY(-4px);
+}
+
+
+/* STANDS */
+
+.body-stands {
+    background:
+        radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
+        linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
+}
+
+.botao-foto-campo {
+    color: #7045c9;
+    background: #f7f2ff;
+    border: 1px solid #e7ddfa;
+}
+
+.botao-foto-campo.foto-campo-ativo {
+    color: #fff;
+    background: linear-gradient(135deg, #7045c9, #9665dc);
+    box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
+    border-color: transparent;
+}
+
+.card-stand {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-stand:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(66, 38, 102, 0.12);
+}
+
+.card-stand:hover .foto-stand {
+    transform: scale(1.05);
+}
+
+.foto-stand {
+    transition: transform 0.35s ease;
+}
+
+.linha-paginacao {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(167, 123, 229, 0.55),
+        transparent
+    );
+}
+
+.foto-opcao {
+    display: none;
+}
+
+.foto-opcao.ativa {
+    display: block;
+}
+
+.botao-foto {
+    color: #7045c9;
+    background: #f7f2ff;
+    border: 1px solid #e7ddfa;
+}
+
+.botao-foto.ativo {
+    color: #fff;
+    background: linear-gradient(135deg, #7045c9, #9665dc);
+    box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
+    border-color: transparent;
+}
+
+
+/* REFERENCIAS */
+
+.card-referencia {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-referencia:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(66, 38, 102, 0.12);
+}
+
+.card-referencia:hover .foto-referencia {
+    transform: scale(1.05);
+}
+
+.foto-referencia {
+    transition: transform 0.35s ease;
+}
+
+.linha-paginacao {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(167, 123, 229, 0.55),
+        transparent
+    );
+}
+
+.texto-limitado {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.body-referencias {
+    background:
+        radial-gradient(circle at 94% 16%, rgba(112, 69, 201, 0.08), transparent 17%),
+        radial-gradient(circle at 5% 85%, rgba(221, 67, 143, 0.04), transparent 19%),
+        linear-gradient(180deg, #fefcff 0%, #fbf9ff 100%);
+}
+
+.painel {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(2px);
+}
+
+.botao-acao {
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.botao-acao:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+}
+
+/* PERSONAGENS */
+
+.card-personagem {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-personagem:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(66, 38, 102, 0.12);
+}
+
+.card-personagem:hover .foto-personagem {
+    transform: scale(1.05);
+}
+
+.foto-personagem {
+    transition: transform 0.35s ease;
+}
+
+.linha-paginacao {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(167, 123, 229, 0.55),
+        transparent
+    );
+}
+
+.botao-foto-campo {
+    color: #7045c9;
+    background: #f7f2ff;
+    border: 1px solid #e7ddfa;
+}
+
+.botao-foto-campo.foto-campo-ativo {
+    color: #fff;
+    background: linear-gradient(135deg, #7045c9, #9665dc);
+    box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
+    border-color: transparent;
+}

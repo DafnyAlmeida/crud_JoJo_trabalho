@@ -120,29 +120,11 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
+    <link rel="stylesheet" href="../assets/css/geral.css">
 
-        .botao-foto-campo {
-            color: #7045c9;
-            background: #f7f2ff;
-            border: 1px solid #e7ddfa;
-        }
-
-        .botao-foto-campo.foto-campo-ativo {
-            color: #fff;
-            background: linear-gradient(135deg, #7045c9, #9665dc);
-            box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
-            border-color: transparent;
-        }
-    </style>
 </head>
 
-<body class="min-h-screen font-body text-jojo-dark">
+<body class="min-h-screen font-body text-jojo-dark body-stands">
     <?php include_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
@@ -201,9 +183,9 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 
             <div class="flex gap-3">
                 <button type="submit" form="form-stand"
-                    class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-button transition hover:bg-purple-700">
+                    class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-5 py-2.5 text-sm font-bold text-white shadow-button transition hover:bg-purple-700">
                     <i class="fa-regular fa-floppy-disk"></i>
-                    Salvar alterações
+                    Salvar
                 </button>
             </div>
         </section>

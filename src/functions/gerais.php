@@ -10,29 +10,20 @@ function listarTotaisPorParte(PDO $pdo, int $usuario_id): array
     $sql = "
         SELECT
             pt.id AS parte_id,
-
             COUNT(DISTINCT pp.personagem_id) AS personagens,
-
             COUNT(DISTINCT s.id) AS stands,
-
             COUNT(DISTINCT r.id) AS referencias
-
         FROM partes pt
-
         LEFT JOIN personagens_partes pp
             ON pp.parte_id = pt.id
-
         LEFT JOIN personagens p
             ON p.id = pp.personagem_id
-
         LEFT JOIN stands s
             ON s.personagem_id = p.id
             AND s.usuario_id = :usuario_stands
-
         LEFT JOIN referencias r
             ON r.parte_id = pt.id
             AND r.usuario_id = :usuario_referencias
-
         GROUP BY pt.id
         ORDER BY pt.id ASC
     ";
@@ -49,6 +40,7 @@ function listarTotaisPorParte(PDO $pdo, int $usuario_id): array
     $totais = [];
 
     foreach ($resultado as $linha) {
+        
         $totais[(int) $linha["parte_id"]] = [
             "stands" => (int) $linha["stands"],
             "personagens" => (int) $linha["personagens"],
@@ -394,4 +386,19 @@ function processar_upload_foto(
     }
 
     return $nova_foto;
+}
+
+function imagemStand(?string $caminho): string {
+    
+    $caminho = trim((string) $caminho);
+
+    if ($caminho === "") {
+        return "";
+    }
+
+    if (str_starts_with($caminho, "../") || str_starts_with($caminho, "http")) {
+        return $caminho;
+    }
+
+    return "../" . $caminho;
 }

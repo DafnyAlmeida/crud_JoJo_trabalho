@@ -4,6 +4,7 @@ include_once "../src/includes/bloqueio.php";
 include_once "../src/functions/gerais.php";
 
 $usuario_id = $_SESSION["usuario_id"];
+
 // Função que retorna um array com o total de stands, perso e refere por parte
 $totaisPorParte = listarTotaisPorParte($pdo, $usuario_id);
 
@@ -118,6 +119,7 @@ foreach ($partes as &$parte) {
     $parte["referencias"] = $totaisPorParte[$parte_id]["referencias"] ?? 0;
 }
 
+// Quebra a referência com o último item do array
 unset($parte);
 
 ?>
@@ -171,23 +173,8 @@ unset($parte);
         }
     </script>
 
-    <style>
-        .losango {
-            transform: rotate(45deg);
-        }
-
-        .losango span {
-            transform: rotate(-45deg);
-        }
-
-        .card-parte:hover img {
-            transform: scale(1.06);
-        }
-
-        .card-parte:hover {
-            transform: translateY(-4px);
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/geral.css">
+    
 </head>
 
 <body class="min-h-screen bg-jojo-bg font-body text-jojo-dark">

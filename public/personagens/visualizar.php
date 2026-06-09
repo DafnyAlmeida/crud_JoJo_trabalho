@@ -141,39 +141,10 @@ $descricaoFoto = texto_ou_padrao(
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at 94% 16%, rgba(112, 69, 201, 0.08), transparent 17%),
-                radial-gradient(circle at 5% 85%, rgba(221, 67, 143, 0.04), transparent 19%),
-                linear-gradient(180deg, #fefcff 0%, #fbf9ff 100%);
-        }
-
-        .foto-opcao {
-            display: none;
-        }
-
-        .foto-opcao.ativa {
-            display: block;
-        }
-
-        .botao-foto {
-            color: #7045c9;
-            background: #f7f2ff;
-            border: 1px solid #e7ddfa;
-        }
-
-        .botao-foto.ativo {
-            color: #fff;
-            background: linear-gradient(135deg, #7045c9, #9665dc);
-            box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
-            border-color: transparent;
-        }
-        
-    </style>
+    <link rel="stylesheet" href="../assets/css/geral.css">
 </head>
 
-<body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
+<body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark body-referencias">
 
     <?php require_once "../../src/includes/header.php"; ?>
 

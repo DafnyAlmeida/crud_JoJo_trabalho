@@ -1,5 +1,4 @@
 <?php
-
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
 require_once "../../src/functions/gerais.php";
@@ -43,10 +42,8 @@ $pagina_atual = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT) ?: 1;
 $sql = "
     SELECT COUNT(DISTINCT p.id)
     FROM personagens p
-
     INNER JOIN personagens_partes pp
         ON pp.personagem_id = p.id
-
     WHERE pp.parte_id = :parte_id
     AND p.usuario_id = :usuario_id
     ";
@@ -65,7 +62,7 @@ $total_paginas = max(1, (int) ceil($total_personagens / $por_pagina));
 // Impede valor inválido
 if ($pagina_atual < 1) {
     $pagina_atual = 1;
-} else if ($pagina_atual > $total_paginas) {
+} elseif ($pagina_atual > $total_paginas) {
     $pagina_atual = $total_paginas;
 }
 

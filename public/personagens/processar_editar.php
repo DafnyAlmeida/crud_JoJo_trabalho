@@ -25,6 +25,7 @@ $infor_gerais = trim((string) ($_POST["infor_gerais"] ?? ""));
 $idade = $_POST["idade"] ?? null;
 $papel = $_POST["papel"] ?? null;
 
+// Transforma array em string de URL
 if ($nome === "") {
     header(
         "Location: editar.php?"

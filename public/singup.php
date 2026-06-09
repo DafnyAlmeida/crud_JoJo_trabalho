@@ -5,6 +5,7 @@ require_once "../src/config/conexao.php";
 $erro = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["email"], $_POST["nome"])) {
+
     $nome = $_POST["nome"];
     $email = $_POST["email"];
     $senha = $_POST["senha"];
@@ -33,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
             ":email" => $email
         ]);
 
-        if ($stmt->fetch()) {
+        if (!$stmt->fetch()) {
             throw new Exception("Email ou senha inválidos.");
         }
 
@@ -110,23 +111,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.08), transparent 34%),
-                radial-gradient(circle at bottom right, rgba(221, 67, 143, 0.06), transparent 30%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
-
-        .banner-jojos {
-            background-image:
-                linear-gradient(90deg, rgba(48, 32, 79, 0.88), rgba(112, 69, 201, 0.8), rgba(221, 67, 143, 0.7)),
-                url("assets/img/login_singup/todos-jojos.png");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/geral.css">
+    
 </head>
 
 <body class="min-h-screen font-body text-jojo-dark">
@@ -139,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
                     <!-- Logo -->
                     <div class="mb-7 text-center">
                         <img
-                            src="assets/img/login_singup/logo.png"
+                            src="assets/img/logo.png"
                             alt="Logo JoJo Archive"
                             class="mx-auto mb-4 h-16 w-16 rounded-2xl object-contain shadow-soft"
                         >
@@ -257,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 
                 <div class="relative z-10">
                     <img
-                        src="assets/img/login_singup/logo.png"
+                        src="assets/img/logo.png"
                         alt="Logo JoJo Archive"
                         class="mb-5 h-16 w-16 rounded-2xl object-contain"
                     >

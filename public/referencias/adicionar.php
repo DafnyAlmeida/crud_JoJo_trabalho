@@ -246,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 name="titulo" 
                                 id="titulo" 
                                 required
-                                placeholder="Ex.: Killer Queen"
+                                placeholder="Ex.: AC/DC"
                                 class="w-full rounded-xl border border-jojo-border bg-white px-3 py-2.5 text-[13px] text-[#433366] outline-none transition placeholder:text-slate-400 focus:border-jojo-lilac focus:ring-4 focus:ring-purple-100"
                             >
                         </div>

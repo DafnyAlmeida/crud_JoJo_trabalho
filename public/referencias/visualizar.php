@@ -88,31 +88,11 @@ $parte_id = (int) $referencia->parte_id;
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at 94% 16%, rgba(112, 69, 201, 0.08), transparent 17%),
-                radial-gradient(circle at 5% 85%, rgba(221, 67, 143, 0.04), transparent 19%),
-                linear-gradient(180deg, #fefcff 0%, #fbf9ff 100%);
-        }
-
-        .painel {
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(2px);
-        }
-
-        .botao-acao {
-            transition: transform 0.2s ease, filter 0.2s ease;
-        }
-
-        .botao-acao:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.04);
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/geral.css">
+    
 </head>
 
-<body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
+<body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark body-referencias">
     <?php require_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
     <!-- Caminho da página -->

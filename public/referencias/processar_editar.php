@@ -60,7 +60,7 @@ try {
     ]);
 
     if ($parte_id) {
-        header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=update_ok");
+        header("Location: index.php?parte_id=" . $parte_id . "&status=update_ok");
     } else {
         header("Location: referencias/index.php?status=update_ok");
     }

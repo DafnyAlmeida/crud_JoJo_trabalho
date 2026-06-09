@@ -50,20 +50,6 @@ $stmt->execute([
 
 $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-function imagemStand(?string $caminho): string {
-    $caminho = trim((string) $caminho);
-
-    if ($caminho === "") {
-        return "";
-    }
-
-    if (str_starts_with($caminho, "../") || str_starts_with($caminho, "http")) {
-        return $caminho;
-    }
-
-    return "../" . $caminho;
-}
-
 $foto_anime = imagemStand($stand->foto_anime ?? "");
 $foto_manga = imagemStand($stand->foto_manga ?? "");
 
@@ -128,36 +114,10 @@ $texto_habilidades_gerais = $stand->habilidade_texto_geral ?? $stand->infor_gera
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
+    <link rel="stylesheet" href="../assets/css/geral.css">
 
-        .foto-opcao {
-            display: none;
-        }
-
-        .foto-opcao.ativa {
-            display: block;
-        }
-
-        .botao-foto {
-            color: #7045c9;
-            background: #f7f2ff;
-            border: 1px solid #e7ddfa;
-        }
-
-        .botao-foto.ativo {
-            color: #fff;
-            background: linear-gradient(135deg, #7045c9, #9665dc);
-            box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
-            border-color: transparent;
-        }
-    </style>
 </head>
-<body class="min-h-screen font-body text-jojo-dark">
+<body class="min-h-screen font-body text-jojo-dark body-stands">
     <?php require_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-4 pt-6">
 

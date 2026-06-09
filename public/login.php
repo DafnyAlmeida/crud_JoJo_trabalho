@@ -1,15 +1,17 @@
 <?php 
+require_once "../src/config/conexao.php";
 
 session_start();
-require_once "../src/config/conexao.php";
 
 $erro = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["email"])) {
+
     $email = $_POST["email"];
     $senha = $_POST["senha"];
 
     try {
+
         $email = strtolower(trim($_POST['email']));
         $senha = trim($_POST["senha"]);
 
@@ -26,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         }
 
         $_SESSION['usuario_id'] = $usuario->id;
+
         $_SESSION['usuario_nome'] = $usuario->nome;
 
         header("Location: index.php?status=sucesso_login");
@@ -33,6 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
 
     } catch (Exception $e) {
         $erro = $e->getMessage();
+
     } catch (PDOException $e) {
         $erro = "Erro interno, pedimos desculpa";
     }
@@ -59,7 +63,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -90,26 +93,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.08), transparent 34%),
-                radial-gradient(circle at bottom right, rgba(221, 67, 143, 0.06), transparent 30%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
-
-        .banner-jojos {
-            background-image:
-                linear-gradient(90deg, rgba(48, 32, 79, 0.92), rgba(112, 69, 201, 0.80), rgba(221, 67, 143, 0.70)),
-                url("assets/img/login_singup/todos-jojos.png");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/geral.css">
+    
 </head>
 
-<body class="min-h-screen font-body text-jojo-dark">
+<body class="min-h-screen font-body text-jojo-dark body-login">
     <main class="flex min-h-screen items-center justify-center px-5 py-8">
         <section class="grid w-full max-w-[1040px] overflow-hidden rounded-[26px] border border-jojo-border bg-white shadow-card lg:grid-cols-[1fr_1fr]">
 

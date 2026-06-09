@@ -43,7 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ":id" => $_POST["personagem_id"]
         ]);
 
-        if (!$stmt->fetch()) {
+        $personagem = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$personagem) {
             throw new Exception("Personagem não encontrado.");
         }
 
@@ -76,7 +78,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verifica se teve alguma habilidade cadastrada
         if (!empty($_POST["habilidade_nome"]) && is_array($_POST["habilidade_nome"])) {
+            // Percorre o campo do array nome e retorna seu nome e index
             foreach ($_POST["habilidade_nome"] as $index => $nome_habilidade) {
+
                 $descricao_habilidade = $_POST["habilidade_descricao"][$index] ?? "";
                 $tipo_habilidade = $_POST["habilidade_tipo"][$index] ?? "";
 
@@ -112,9 +116,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        header("Location: index.php?parte_id=" . urlencode($parte_id));
+        header("Location: index.php?parte_id=" . urlencode((string) $parte_id));
         exit;
 
+        // o $e é a variavel que guarda o erro e o get é para pegalo 
     } catch (Exception $e) {
         echo $e->getMessage();
     }
@@ -171,29 +176,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
     </script>
+    
+    <link rel="stylesheet" href="../assets/css/geral.css">
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
-
-        .botao-foto-campo {
-            color: #7045c9;
-            background: #f7f2ff;
-            border: 1px solid #e7ddfa;
-        }
-
-        .botao-foto-campo.foto-campo-ativo {
-            color: #fff;
-            background: linear-gradient(135deg, #7045c9, #9665dc);
-            box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
-            border-color: transparent;
-        }
-    </style>
 </head>
-<body class="min-h-screen font-body text-jojo-dark">
+<body class="min-h-screen font-body text-jojo-dark body-stands">
     <?php include_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 

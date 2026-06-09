@@ -142,39 +142,9 @@ $temas = [
             }
         }
     </script>
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
 
-        .card-stand {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
+    <link rel="stylesheet" href="../assets/css/geral.css">
 
-        .card-stand:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(66, 38, 102, 0.12);
-        }
-
-        .card-stand:hover .foto-stand {
-            transform: scale(1.05);
-        }
-
-        .foto-stand {
-            transition: transform 0.35s ease;
-        }
-
-        .linha-paginacao {
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(167, 123, 229, 0.55),
-                transparent
-            );
-        }
-    </style>
 </head>
 
 <body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">

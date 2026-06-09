@@ -102,56 +102,11 @@ if (!$personagem | !$personagens_partes) {
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
-
-        .card-personagem {
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .card-personagem:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(66, 38, 102, 0.12);
-        }
-
-        .card-personagem:hover .foto-personagem {
-            transform: scale(1.05);
-        }
-
-        .foto-personagem {
-            transition: transform 0.35s ease;
-        }
-
-        .linha-paginacao {
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(167, 123, 229, 0.55),
-                transparent
-            );
-        }
-
-        .botao-foto-campo {
-            color: #7045c9;
-            background: #f7f2ff;
-            border: 1px solid #e7ddfa;
-        }
-
-        .botao-foto-campo.foto-campo-ativo {
-            color: #fff;
-            background: linear-gradient(135deg, #7045c9, #9665dc);
-            box-shadow: 0 10px 20px rgba(112, 69, 201, 0.18);
-            border-color: transparent;
-        }
-
-    </style>
+    <link rel="stylesheet" href="../assets/css/geral.css">
+    
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark">
+<body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark body-stands">
 
     <?php include_once "../../src/includes/header.php"; ?>
 
@@ -203,7 +158,7 @@ if (!$personagem | !$personagens_partes) {
                 </div>
             </div>
             <button type="submit" form="form-personagem"
-                class="inline-flex items-center gap-2 rounded-xl bg-jojo-purple px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-200 transition hover:bg-purple-700">
+                class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7045c9] to-[#a77be5] px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-200 transition hover:bg-purple-700">
                 <i class="fa-regular fa-floppy-disk"></i>
                 Salvar
             </button>
