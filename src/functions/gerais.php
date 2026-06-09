@@ -252,7 +252,13 @@ function editar(PDO $pdo, int $personagem_id, int $usuario_id, array $dados): bo
 // Função que busca personagens que ainda não tem stands
 function buscarPersonagensDisponiveis(PDO $pdo): array
 {
-    $sql = "SELECT DISTINCT p.id, p.nome FROM personagens p INNER JOIN personagens_partes pp ON p.id = pp.personagem_id INNER JOIN partes pt ON pp.parte_id = pt.id LEFT JOIN stands s ON p.id = s.personagem_id WHERE s.id IS NULL AND pt.numero NOT IN (1, 2)";
+    $sql = "
+        SELECT p.*
+        FROM personagens p
+        LEFT JOIN stands s ON s.personagem_id = p.id
+        WHERE s.id IS NULL
+        ORDER BY p.nome ASC
+    ";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute();

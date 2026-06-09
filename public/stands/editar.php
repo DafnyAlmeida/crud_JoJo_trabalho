@@ -47,13 +47,17 @@ if (!$parte) {
 $sql = "SELECT DISTINCT p.id, p.nome 
         FROM personagens p 
         INNER JOIN personagens_partes pp ON p.id = pp.personagem_id 
-        INNER JOIN partes pt ON pp.parte_id = pt.id 
         LEFT JOIN stands s ON p.id = s.personagem_id 
-        WHERE (s.id IS NULL OR p.id = :personagem_atual)
-        AND pt.numero NOT IN (1, 2)";
+        WHERE pp.parte_id = :parte_id
+        AND (
+            s.id IS NULL 
+            OR p.id = :personagem_atual
+        )
+        ORDER BY p.nome ASC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
+    ":parte_id" => $parte_id,
     ":personagem_atual" => $stand->personagem_id
 ]);
 
