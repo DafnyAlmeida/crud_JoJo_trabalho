@@ -79,7 +79,7 @@ try {
         ":id" => $stand_id
     ]);
 
-    header("Location: index.php?parte_id=" . $parte_id . "&status=delete_ok");
+    header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=delete_ok");
     exit;
 
 } catch (Exception $e) {
