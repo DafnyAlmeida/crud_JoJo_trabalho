@@ -1,5 +1,4 @@
 <?php
-
 require_once "../../src/config/conexao.php";
 require_once "../../src/includes/bloqueio.php";
 require_once "../../src/functions/gerais.php";
@@ -10,7 +9,7 @@ $parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
 if (!$personagem_id || !$usuario_id) {
-    header("Location: index.php?status=personagem_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -19,12 +18,11 @@ if (!$parte_id) {
 }
 
 if (!$parte_id) {
-    header("Location: index.php?status=parte_invalida");
+    header("Location: index.php?status=erro");
     exit;
 }
 
 // Buscar detalhes da parte
-
 $sql = "
     SELECT
         p.*,
@@ -65,7 +63,7 @@ $stmt->execute([
 $personagem = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$personagem) {
-    header("Location: index.php?parte_id=" . urlencode((string) $parte_id) . "&status=personagem_invalido");
+    header("Location: index.php?parte_id=" . urlencode((string) $parte_id) . "&status=erro");
     exit;
 }
 

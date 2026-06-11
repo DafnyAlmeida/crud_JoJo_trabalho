@@ -4,10 +4,12 @@ include_once "../../src/config/conexao.php";
 require_once "../../src/functions/upload.php";
 require_once "../../src/functions/gerais.php";
 
+$erro = "";
+
 $parte_id = $_GET["parte_id"] ?? $_POST["parte_id"] ?? null;
 
 if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
-    header("Location: ../personagens/index.php?status=parte_invalida");
+    header("Location: ../index.php?status=erro");
     exit;
 }
 
@@ -21,107 +23,216 @@ $stmt->execute([
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$parte) {
-    header("Location: ../index.php?status=parte_nao_encontrada");
+    header("Location: ../index.php?status=erro");
     exit;
 }
 
 // Função que retorna personagens sem stands
 $personagens = buscarPersonagensDisponiveis($pdo);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $imagens_salvas = [];
 
     try {
-        $parte_id = $_POST["parte_id"];
 
-        if (empty($_POST["personagem_id"])) {
-            throw new Exception("Selecione um personagem.");
+        $tamanho_requisicao = (int) ($_SERVER["CONTENT_LENGTH"] ?? 0);
+
+        $limite_post = converter_tamanho_php_para_bytes(
+            ini_get("post_max_size")
+        );
+
+        if (
+            $limite_post > 0 &&
+            $tamanho_requisicao > $limite_post
+        ) {
+            throw new RuntimeException(
+                "O tamanho total das imagens ultrapassa o limite permitido de 8 MB."
+            );
         }
 
-        $sql = "SELECT id FROM personagens WHERE id = :id LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ":id" => $_POST["personagem_id"]
-        ]);
+        $nome = trim($_POST["nome"] ?? "");
+        $idade = $_POST["idade"] ?? "";
+        $papel = $_POST["papel"] ?? "";
+        $parte_post = $_POST["parte_id"] ?? null;
 
-        $personagem = $stmt->fetch(PDO::FETCH_OBJ);
-
-        if (!$personagem) {
-            throw new Exception("Personagem não encontrado.");
+        if ($nome === "") {
+            throw new RuntimeException(
+                "Informe o nome do personagem."
+            );
         }
 
-        $foto_anime = salvar_imagem("foto_anime", "stands", $_POST["nome"]);
-        $foto_manga = salvar_imagem("foto_manga", "stands", $_POST["nome"]);
-        $foto_catalogo = salvar_imagem("foto_catalogo", "stands", $_POST["nome"]);
+        if (
+            !$parte_post ||
+            !filter_var($parte_post, FILTER_VALIDATE_INT)
+        ) {
+            throw new RuntimeException(
+                "A parte informada é inválida."
+            );
+        }
 
-        $sql = "INSERT INTO stands
-        (usuario_id, personagem_id, nome, descricao, foto_anime, foto_manga, foto_catalogo, infor_gerais, habilidade_texto_geral, tipo)
-        VALUES
-        (:usuario_id, :personagem_id, :nome, :descricao, :foto_anime, :foto_manga, :foto_catalogo, :infor_gerais, :habilidade_texto_geral, :tipo)";
+        if ((int) $parte_post !== (int) $parte_id) {
+            throw new RuntimeException(
+                "A parte enviada não corresponde à parte atual."
+            );
+        }
+
+        if (
+            $idade === "" ||
+            filter_var($idade, FILTER_VALIDATE_INT) === false ||
+            (int) $idade < 0
+        ) {
+            throw new RuntimeException(
+                "Informe uma idade válida."
+            );
+        }
+
+        $papeis_permitidos = [
+            "protagonista",
+            "vilao",
+            "jojobro"
+        ];
+
+        if (!in_array($papel, $papeis_permitidos, true)) {
+            throw new RuntimeException(
+                "Selecione um papel válido."
+            );
+        }
+
+        $pdo->beginTransaction();
+
+        $foto_anime = salvar_imagem(
+            "foto_anime",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_anime;
+
+        $foto_manga = salvar_imagem(
+            "foto_manga",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_manga;
+
+        $foto_catalogo = salvar_imagem(
+            "foto_catalogo",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_catalogo;
+
+        $foto_biografia = salvar_imagem(
+            "foto_biografia",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_biografia;
+
+        $sql = "
+            INSERT INTO personagens (
+                usuario_id,
+                nome,
+                biografia,
+                foto_anime,
+                foto_manga,
+                foto_catalogo,
+                foto_biografia,
+                infor_gerais,
+                descricao_foto_biografia
+            ) VALUES (
+                :usuario_id,
+                :nome,
+                :biografia,
+                :foto_anime,
+                :foto_manga,
+                :foto_catalogo,
+                :foto_biografia,
+                :infor_gerais,
+                :descricao_foto_biografia
+            )
+        ";
 
         $stmt = $pdo->prepare($sql);
 
         $stmt->execute([
             ":usuario_id" => $_SESSION["usuario_id"],
-            ":personagem_id" => $_POST["personagem_id"],
-            ":nome" => $_POST["nome"],
-            ":descricao" => $_POST["descricao"],
+            ":nome" => $nome,
+            ":biografia" => trim($_POST["biografia"] ?? ""),
             ":foto_anime" => $foto_anime,
             ":foto_manga" => $foto_manga,
             ":foto_catalogo" => $foto_catalogo,
-            ":infor_gerais" => $_POST["detalhado"],
-            ":habilidade_texto_geral" => $_POST["detalhado"],
-            ":tipo" => $_POST["tipo"]
+            ":foto_biografia" => $foto_biografia,
+            ":infor_gerais" => trim($_POST["infor_gerais"] ?? ""),
+            ":descricao_foto_biografia" =>
+                trim($_POST["descricao_foto_biografia"] ?? "")
         ]);
 
-        // Pega o id da ultima inserção
-        $stand_id = $pdo->lastInsertId();
+        $personagem_id = (int) $pdo->lastInsertId();
 
-        // Verifica se teve alguma habilidade cadastrada
-        if (!empty($_POST["habilidade_nome"]) && is_array($_POST["habilidade_nome"])) {
-            // Percorre o campo do array nome e retorna seu nome e index
-            foreach ($_POST["habilidade_nome"] as $index => $nome_habilidade) {
 
-                $descricao_habilidade = $_POST["habilidade_descricao"][$index] ?? "";
-                $tipo_habilidade = $_POST["habilidade_tipo"][$index] ?? "";
+        $sql = "
+            INSERT INTO personagens_partes (
+                personagem_id,
+                parte_id,
+                idade,
+                papel
+            ) VALUES (
+                :personagem_id,
+                :parte_id,
+                :idade,
+                :papel
+            )
+        ";
 
-                $imagem_habilidade = salvar_imagem_array(
-                    "habilidade_imagem",
-                    $index,
-                    "habilidades",
-                    $_POST["nome"]
-                );
+        $stmt = $pdo->prepare($sql);
 
-                $diagrama_habilidade = salvar_imagem_array(
-                    "habilidade_diagrama_imagem",
-                    $index,
-                    "diagramas",
-                    $_POST["nome"]
-                );
+        $stmt->execute([
+            ":personagem_id" => $personagem_id,
+            ":parte_id" => (int) $parte_post,
+            ":idade" => (int) $idade,
+            ":papel" => $papel
+        ]);
 
-                $sql = "INSERT INTO stand_habilidades
-                (stand_id, nome, descricao, imagem, forca, tipo)
-                VALUES
-                (:stand_id, :nome, :descricao, :imagem, :forca, :tipo)";
+        $pdo->commit();
 
-                $stmt = $pdo->prepare($sql);
+        header(
+            "Location: index.php?parte_id="
+            . (int) $parte_post
+            . "&status=adicionado"
+        );
 
-                $stmt->execute([
-                    ":stand_id" => $stand_id,
-                    ":nome" => $nome_habilidade,
-                    ":descricao" => $descricao_habilidade,
-                    ":imagem" => $imagem_habilidade,
-                    ":forca" => $diagrama_habilidade,
-                    ":tipo" => $tipo_habilidade
-                ]);
-            }
-        }
-
-        header("Location: index.php?parte_id=" . urlencode((string) $parte_id));
         exit;
 
-        // o $e é a variavel que guarda o erro e o get é para pegalo 
-    } catch (Exception $e) {
-        echo $e->getMessage();
+    } catch (PDOException $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        foreach ($imagens_salvas as $imagem) {
+            deletar_arquivo($imagem);
+        }
+
+        error_log($e->getMessage());
+
+        $erro = "Não foi possível salvar o personagem. Verifique os dados e tente novamente.";
+
+    } catch (Throwable $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        foreach ($imagens_salvas as $imagem) {
+            deletar_arquivo($imagem);
+        }
+
+        $erro = $e->getMessage();
     }
 }
 
@@ -184,6 +295,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php include_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
+        <?php if (!empty($erro)): ?>
+            <div class="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i>
+
+                <?= htmlspecialchars(
+                    $erro,
+                    ENT_QUOTES,
+                    "UTF-8"
+                ); ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
@@ -243,7 +366,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- Formulário -->
         <form 
             id="form-stand"
-            action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" 
+            action="adicionar.php?parte_id=<?= urlencode((string) $parte_id) ?>" 
             method="post" 
             enctype="multipart/form-data"
             class="grid gap-5 lg:grid-cols-[0.9fr_1.4fr]"

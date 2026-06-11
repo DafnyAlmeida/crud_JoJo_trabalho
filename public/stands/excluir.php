@@ -4,7 +4,7 @@ include_once "../../src/includes/bloqueio.php";
 include_once "../../src/functions/upload.php";
 
 if (empty($_GET["id_stand"]) || !filter_var($_GET["id_stand"], FILTER_VALIDATE_INT)) {
-    header("Location: index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -28,7 +28,7 @@ $stmt->execute([
 $stand = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$stand) {
-    header("Location: index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -79,7 +79,7 @@ try {
         ":id" => $stand_id
     ]);
 
-    header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=delete_ok");
+    header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=apagado");
     exit;
 
 } catch (Exception $e) {

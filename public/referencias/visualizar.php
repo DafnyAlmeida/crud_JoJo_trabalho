@@ -4,7 +4,7 @@ include_once "../../src/includes/bloqueio.php";
 require_once "../../src/functions/gerais.php";
 
 if (!isset($_GET["id_referencia"]) || !filter_var($_GET["id_referencia"], FILTER_VALIDATE_INT)) {
-    header("Location: ../index.php?status=id_vazio");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -12,16 +12,16 @@ $referencia_id = (int) $_GET["id_referencia"];
 $usuario_id = (int) $_SESSION["usuario_id"];
 
 $sql = "
-SELECT 
-    r.*,
-    p.nome AS parte_nome
-FROM referencias r
-LEFT JOIN partes p
-    ON p.id = r.parte_id
-WHERE r.id = :id
-AND r.usuario_id = :usuario_id
-LIMIT 1
-";
+    SELECT 
+        r.*,
+        p.nome AS parte_nome
+    FROM referencias r
+    LEFT JOIN partes p
+        ON p.id = r.parte_id
+    WHERE r.id = :id
+    AND r.usuario_id = :usuario_id
+    LIMIT 1
+    ";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -32,7 +32,7 @@ $stmt->execute([
 $referencia = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$referencia) {
-    header("Location: ../index.php?status=id_invalido");
+    header("Location: ../index.php?status=erro");
     exit;
 }
 

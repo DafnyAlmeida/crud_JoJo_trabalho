@@ -3,10 +3,12 @@ include_once "../../src/includes/bloqueio.php";
 include_once "../../src/config/conexao.php";
 require_once "../../src/functions/upload.php";
 
+$erro = "";
+
 $parte_id = $_GET["parte_id"] ?? $_POST["parte_id"] ?? null;
 
 if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT)) {
-    header("Location: ../referencias/index.php?status=parte_invalida");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -19,7 +21,7 @@ $stmt->execute([
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$parte) {
-    header("Location: ../index.php?status=parte_nao_encontrada");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -45,13 +47,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ":descricao" => $_POST["descricao"]
         ]);
 
-        header("Location: index.php?parte_id=" . $_POST["parte_id"] . "&status=salvo");
+        header("Location: index.php?parte_id=" . urlencode($parte_id) . "&status=adicionado");
         exit;
 
     } catch (Exception $e) {
-        echo $e->getMessage();
+        $erro = $e->getMessage();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -102,20 +105,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </script>
 
-    <style>
-        body {
-            background:
-                radial-gradient(circle at top left, rgba(113, 69, 201, 0.06), transparent 34%),
-                linear-gradient(180deg, #fdfcff 0%, #fbf9ff 100%);
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/geral.css">
+
 </head>
 
-<body class="min-h-screen font-body text-jojo-dark">
-
+<body class="min-h-screen font-body text-jojo-dark body-stands">
     <?php include_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
+        
+        <?php if (!empty($erro)): ?>
+            <div class="mb-4 rounded-2xl border border-red-10 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                <?= htmlspecialchars($erro); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">

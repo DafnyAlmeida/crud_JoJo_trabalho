@@ -9,7 +9,7 @@ $parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
 if (!$personagem_id || !$parte_id || !$usuario_id) {
-    header("Location: index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -20,7 +20,7 @@ $personagem = buscarDeletar(
 );
 
 if (!$personagem) {
-    header("Location: index.php?parte_id=" . $parte_id . "&status=id_invalido");
+    header("Location: index.php?parte_id=" . $parte_id . "&status=erro");
     exit;
 }
 
@@ -36,12 +36,12 @@ try {
         deletar_pasta($personagem->foto_anime);
     }
 
-    header("Location: index.php?parte_id=" . $parte_id . "&status=delete_ok");
+    header("Location: index.php?parte_id=" . $parte_id . "&status=apagado");
     exit;
 
 } catch (Throwable $erro) {
     error_log($erro->getMessage());
 
-    header("Location: index.php?parte_id=" . $parte_id . "&status=delete_erro");
+    header("Location: index.php?parte_id=" . $parte_id . "&status=apagado");
     exit;
 }

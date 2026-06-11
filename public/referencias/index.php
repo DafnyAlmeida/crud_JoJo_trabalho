@@ -7,11 +7,11 @@ $parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
 if (!$parte_id || !$usuario_id) {
-    header("Location: ../index.php?status=parte_invalida");
+    header("Location: index.php?status=erro");
     exit;
 }
 
-/* Buscar a parte */
+// Buscar a parte 
 $sql = "
     SELECT id, nome
     FROM partes
@@ -27,15 +27,15 @@ $stmt->execute([
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$parte) {
-    header("Location: ../index.php?status=parte_invalida");
+    header("Location: index.php?status=erro");
     exit;
 }
 
-/* Paginação */
+// Paginação 
 $por_pagina = 8;
 $pagina_atual = filter_input(INPUT_GET, "pagina", FILTER_VALIDATE_INT) ?: 1;
 
-/* Total de referências */
+// Total de referências
 $sql = "
     SELECT COUNT(*)
     FROM referencias
@@ -61,7 +61,7 @@ if ($pagina_atual < 1) {
 
 $offset = ($pagina_atual - 1) * $por_pagina;
 
-/* Buscar referências da página atual */
+// Buscar referências da página atual
 $sql = "
     SELECT 
         id,
@@ -88,35 +88,73 @@ $stmt->execute();
 $referencias = $stmt->fetchAll(PDO::FETCH_OBJ);
 
 function link_pagina_referencia(int $parte_id, int $pagina): string {
-    return "index.php?parte_id=" . urlencode((string) $parte_id) . "&pagina=" . urlencode((string) $pagina);
+    return "index.php?parte_id=" . urlencode($parte_id) . "&pagina=" . urlencode((string) $pagina);
 }
 
 $temas_referencias = [
     [
-        "cor" => "#7045c9",
-        "clara" => "#f1e9ff",
+        "cor" => "#7446c7",
+        "cor_clara" => "#a874e5",
         "icone" => "fa-solid fa-book-open",
         "decoracao" => "fa-solid fa-wand-magic-sparkles"
     ],
     [
-        "cor" => "#dd438f",
-        "clara" => "#ffe8f3",
+        "cor" => "#df468d",
+        "cor_clara" => "#ee76b0",
         "icone" => "fa-solid fa-feather",
         "decoracao" => "fa-regular fa-star"
     ],
     [
-        "cor" => "#8b5cf6",
-        "clara" => "#efe7ff",
+        "cor" => "#d1a042",
+        "cor_clara" => "#ecc767",
         "icone" => "fa-solid fa-scroll",
         "decoracao" => "fa-solid fa-star"
     ],
     [
-        "cor" => "#5b49b8",
-        "clara" => "#ebe9ff",
+        "cor" => "#3f88b7",
+        "cor_clara" => "#6fb6dc",
         "icone" => "fa-solid fa-compass",
         "decoracao" => "fa-solid fa-gem"
     ]
 ];
+
+$alertas = [
+    "adicionado" => [
+        "titulo" => "Sucesso!",
+        "mensagem" => "Referência adicionada com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-check",
+        "cor" => "[#a874e5]"
+    ],
+
+    "editado" => [
+        "titulo" => "Atualizado!",
+        "mensagem" => "Referência editada com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-pen",
+        "cor" => "[#a874e5]"
+    ],
+
+    "apagado" => [
+        "titulo" => "Apagado!",
+        "mensagem" => "Referência apagada com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-trash",
+        "cor" => "[#a874e5]"
+    ],
+
+    "erro" => [
+        "titulo" => "Erro!",
+        "mensagem" => "Ops! Parece que ocorreu um erro.",
+        "tipo" => "erro",
+        "icone" => "fa-solid fa-triangle-exclamation",
+        "cor" => "[#df468d]"
+    ]
+];
+
+$status = $_GET["status"] ?? "";
+$alerta = $alertas[$status] ?? null;
+
 ?>
 
 <!DOCTYPE html>
@@ -136,10 +174,8 @@ $temas_referencias = [
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -390,5 +426,40 @@ $temas_referencias = [
             </div>
         </footer>
     <?php endif; ?>
+    <?php if ($alerta): ?>
+    <div id="popupMensagem"
+        class="fixed right-4 top-[60px] z-[9999] flex items-center gap-2 rounded-xl border border-<?= $alerta['cor'] ?> bg-white px-4 py-3 shadow-lg transition-all duration-300">
+
+        <div class="flex h-8 w-8 items-center justify-center rounded-full text-sm
+            bg-<?= $alerta['cor'] ?>/30 text-<?= $alerta['cor'] ?>">
+
+            <i class="<?= $alerta['icone'] ?>"></i>
+        </div>
+
+        <div>
+            <p class="text-sm font-bold text-<?= $alerta['cor'] ?>-700">
+                <?= htmlspecialchars($alerta["titulo"]) ?>
+            </p>
+
+            <p class="text-xs text-gray-600">
+                <?= htmlspecialchars($alerta["mensagem"]) ?>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const popup = document.getElementById("popupMensagem");
+
+            if (popup) {
+                popup.classList.add("opacity-0", "translate-x-4");
+
+                setTimeout(() => {
+                    popup.remove();
+                }, 400);
+            }
+        }, 4000);
+    </script>
+<?php endif; ?>
 </body>
 </html>

@@ -24,36 +24,104 @@ if (!$parte) {
     exit;
 }
 
+$erro = "";
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $nome = trim($_POST["nome"] ?? "");
-
-    if ($nome === "") {
-        die("Erro: nome do personagem não foi enviado.");
-    }
-    
-    if (!isset($_POST["parte_id"]) || !filter_var($_POST["parte_id"], FILTER_VALIDATE_INT)) {
-        die("Erro: parte inválida.");
-    }
-
-    foreach (["foto_anime", "foto_manga", "foto_catalogo", "foto_biografia"] as $campoFoto) {
-        if (!isset($_FILES[$campoFoto])) {
-            die("Erro: o campo {$campoFoto} não chegou ao PHP.");
-        }
-
-        if ($_FILES[$campoFoto]["error"] !== UPLOAD_ERR_OK) {
-            die("Erro no upload de {$campoFoto}. Código: " . $_FILES[$campoFoto]["error"]);
-        }
-    }
+    $imagens_salvas = [];
 
     try {
-        // Prepara para alterações
+        $tamanho_requisicao = (int) ($_SERVER["CONTENT_LENGTH"] ?? 0);
+
+        $limite_post = converter_tamanho_php_para_bytes(
+            ini_get("post_max_size")
+        );
+
+        // Essa validação precisa vir antes da validação do nome
+        if (
+            $limite_post > 0 &&
+            $tamanho_requisicao > $limite_post
+        ) {
+            throw new RuntimeException(
+                "O tamanho total das imagens ultrapassa o limite de 8 MB. Escolha imagens menores."
+            );
+        }
+
+        $nome = trim($_POST["nome"] ?? "");
+        $idade = $_POST["idade"] ?? "";
+        $papel = $_POST["papel"] ?? "";
+        $parte_post = $_POST["parte_id"] ?? null;
+
+        if ($nome === "") {
+            throw new RuntimeException(
+                "Informe o nome do personagem."
+            );
+        }
+
+        if (
+            !$parte_post ||
+            !filter_var($parte_post, FILTER_VALIDATE_INT)
+        ) {
+            throw new RuntimeException(
+                "A parte informada é inválida."
+            );
+        }
+
+        if (
+            $idade === "" ||
+            filter_var($idade, FILTER_VALIDATE_INT) === false ||
+            (int) $idade < 0
+        ) {
+            throw new RuntimeException(
+                "Informe uma idade válida."
+            );
+        }
+
+        $papeis_permitidos = [
+            "protagonista",
+            "vilao",
+            "jojobro"
+        ];
+
+        if (!in_array($papel, $papeis_permitidos, true)) {
+            throw new RuntimeException(
+                "Selecione um papel válido."
+            );
+        }
+
         $pdo->beginTransaction();
 
-        $foto_anime = salvar_imagem("foto_anime", "personagens", $nome);
-        $foto_manga = salvar_imagem("foto_manga", "personagens", $nome);
-        $foto_catalogo = salvar_imagem("foto_catalogo", "personagens", $nome);
-        $foto_biografia = salvar_imagem("foto_biografia", "personagens", $nome);
+        $foto_anime = salvar_imagem(
+            "foto_anime",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_anime;
+
+        $foto_manga = salvar_imagem(
+            "foto_manga",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_manga;
+
+        $foto_catalogo = salvar_imagem(
+            "foto_catalogo",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_catalogo;
+
+        $foto_biografia = salvar_imagem(
+            "foto_biografia",
+            "personagens",
+            $nome
+        );
+
+        $imagens_salvas[] = $foto_biografia;
 
         $sql = "
             INSERT INTO personagens (
@@ -82,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt = $pdo->prepare($sql);
 
         $stmt->execute([
-            ":usuario_id" => $_SESSION["usuario_id"],
+            ":usuario_id" => (int) $_SESSION["usuario_id"],
             ":nome" => $nome,
             ":biografia" => trim($_POST["biografia"] ?? ""),
             ":foto_anime" => $foto_anime,
@@ -90,10 +158,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ":foto_catalogo" => $foto_catalogo,
             ":foto_biografia" => $foto_biografia,
             ":infor_gerais" => trim($_POST["infor_gerais"] ?? ""),
-            ":descricao_foto_biografia" => trim($_POST["descricao_foto_biografia"] ?? "")
+            ":descricao_foto_biografia" =>
+                trim($_POST["descricao_foto_biografia"] ?? "")
         ]);
 
         $personagem_id = (int) $pdo->lastInsertId();
+
+        if ($personagem_id <= 0) {
+            throw new RuntimeException(
+                "Não foi possível cadastrar o personagem."
+            );
+        }
 
         $sql = "
             INSERT INTO personagens_partes (
@@ -113,23 +188,43 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $stmt->execute([
             ":personagem_id" => $personagem_id,
-            ":parte_id" => (int) $_POST["parte_id"],
-            ":idade" => (int) $_POST["idade"],
-            ":papel" => $_POST["papel"]
+            ":parte_id" => (int) $parte_post,
+            ":idade" => (int) $idade,
+            ":papel" => $papel
         ]);
 
         $pdo->commit();
 
-        header("Location: index.php?parte_id=" . (int) $_POST["parte_id"] . "&status=salvo");
+        header(
+            "Location: index.php?parte_id="
+            . (int) $parte_post
+            . "&status=salvo"
+        );
+
         exit;
 
-    } catch (Throwable $erro) {
-        // Vê se o banco esta no meio de uma transição e se estiver apaga tudo que foi feito
+    } catch (Throwable $erro_capturado) {
+
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
 
-        die("<pre>Erro ao salvar personagem:\n" . $erro->getMessage() . "</pre>");
+        foreach ($imagens_salvas as $imagem) {
+            try {
+                deletar_arquivo($imagem);
+            } catch (Throwable $erro_imagem) {
+                error_log($erro_imagem->getMessage());
+            }
+        }
+
+
+        if ($erro_capturado instanceof PDOException) {
+            error_log($erro_capturado->getMessage());
+
+            $erro = "Não foi possível salvar o personagem no banco de dados.";
+        } else {
+            $erro = $erro_capturado->getMessage();
+        }
     }
 }
 
@@ -189,6 +284,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark body-stands">
     <?php include_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
+
+    <?php if (!empty($erro)): ?>
+        <div class="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+            <?= htmlspecialchars($erro); ?>
+        </div>
+    <?php endif; ?>
+    
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
@@ -243,7 +346,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <form 
         id="form-personagem"
-        action="<?= htmlspecialchars($_SERVER["PHP_SELF"]) ?>" 
+        action="adicionar.php?parte_id=<?= urlencode((string) $parte_id) ?>" 
         method="post" 
         enctype="multipart/form-data"
         class="grid gap-5 lg:grid-cols-[0.9fr_1.4fr]"
@@ -553,6 +656,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         };
 
         leitor.readAsDataURL(arquivo);
+    }
+
+    const formulario = document.getElementById("form-personagem");
+
+    formulario.addEventListener("submit", function(evento) {
+        const camposArquivo = formulario.querySelectorAll(
+            'input[type="file"]'
+        );
+
+        let tamanhoTotal = 0;
+
+        camposArquivo.forEach(function(campo) {
+            if (campo.files.length > 0) {
+                tamanhoTotal += campo.files[0].size;
+            }
+        });
+
+        /*
+         * Usamos 7,5 MB porque o POST também contém os outros
+         * campos do formulário e informações internas do envio.
+         */
+        const limiteTotal = 7.5 * 1024 * 1024;
+
+        if (tamanhoTotal > limiteTotal) {
+            evento.preventDefault();
+
+            mostrarErroUpload(
+                "As quatro imagens juntas ultrapassam o limite de 8 MB. Escolha imagens menores."
+            );
+        }
+    });
+
+    function mostrarErroUpload(mensagem) {
+        let alerta = document.getElementById("erro-upload-js");
+
+        if (!alerta) {
+            alerta = document.createElement("div");
+            alerta.id = "erro-upload-js";
+
+            alerta.className =
+                "mb-4 rounded-2xl border border-red-100 " +
+                "bg-red-50 px-4 py-3 text-sm font-semibold text-red-500";
+
+            const main = document.querySelector("main");
+
+            const formulario = document.getElementById(
+                "form-personagem"
+            );
+
+            main.insertBefore(alerta, formulario);
+        }
+
+        alerta.innerHTML = `
+            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+            ${mensagem}
+        `;
+
+        alerta.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
     }
 
 </script>

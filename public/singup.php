@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["senha"], $_POST["emai
         ]);
 
         if (!$stmt->fetch()) {
-            throw new Exception("Email ou senha inválidos.");
+            throw new Exception("Email já cadastrado.");
         }
 
         $senhaHash = password_hash($senha, PASSWORD_DEFAULT);

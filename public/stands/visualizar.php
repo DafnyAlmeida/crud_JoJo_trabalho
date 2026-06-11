@@ -7,7 +7,7 @@ $stand_id = validar_id_get("id_stand");
 $parte_id_url = validar_id_get("parte_id");
 
 if (!$stand_id) {
-    header("Location: ../index.php?status=id_vazio");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -36,7 +36,7 @@ $stmt->execute([
 $stand = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$stand) {
-    header("Location: ../index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 

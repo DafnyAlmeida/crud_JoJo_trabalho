@@ -40,13 +40,13 @@ function validar_imagem_enviada($arquivo, $campo) {
     }
 
     $mensagensUpload = [
-        UPLOAD_ERR_INI_SIZE   => 'O arquivo excedeu o limite configurado no PHP.',
-        UPLOAD_ERR_FORM_SIZE  => 'O arquivo excedeu o limite permitido pelo formulário.',
-        UPLOAD_ERR_PARTIAL    => 'O upload do arquivo foi feito parcialmente.',
-        UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi selecionado.',
+        UPLOAD_ERR_INI_SIZE   => 'O arquivo é muito grande. Envie uma imagem menor.',
+        UPLOAD_ERR_FORM_SIZE  => 'O arquivo é muito grande. Envie uma imagem menor.',
+        UPLOAD_ERR_PARTIAL    => 'O arquivo foi enviado pela metade. Tente novamente.',
+        UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado.',
         UPLOAD_ERR_NO_TMP_DIR => 'A pasta temporária do servidor não foi encontrada.',
         UPLOAD_ERR_CANT_WRITE => 'O servidor não conseguiu gravar o arquivo.',
-        UPLOAD_ERR_EXTENSION  => 'Uma extensão do PHP interrompeu o upload.'
+        UPLOAD_ERR_EXTENSION  => 'O envio foi bloqueado pelo servidor.'
     ];
 
     if ($arquivo['error'] !== UPLOAD_ERR_OK) {
@@ -225,4 +225,37 @@ function deletar_pasta($pasta) {
     }
 
     rmdir($caminho);
+}
+
+// Função usada no processar editar para voltar o form de edição
+function voltar_para_editar($referencia_id, $parte_id = null) {
+    $url = "editar.php?id_referencia=" . urlencode($referencia_id);
+
+    if (!empty($parte_id)) {
+        $url .= "&parte_id=" . urlencode($parte_id);
+    }
+
+    header("Location: " . $url);
+    exit;
+}
+
+// Converte valores do php.ini, tipo 8M, 20M, 1G, para bytes
+if (!function_exists("converter_tamanho_php_para_bytes")) {
+    function converter_tamanho_php_para_bytes(string $valor): int {
+        $valor = trim($valor);
+
+        if ($valor === "") {
+            return 0;
+        }
+
+        $ultimo = strtolower($valor[strlen($valor) - 1]);
+        $numero = (int) $valor;
+
+        return match ($ultimo) {
+            "g" => $numero * 1024 * 1024 * 1024,
+            "m" => $numero * 1024 * 1024,
+            "k" => $numero * 1024,
+            default => $numero
+        };
+    }
 }

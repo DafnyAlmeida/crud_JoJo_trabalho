@@ -3,8 +3,15 @@ include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
 include_once "../../src/functions/gerais.php";
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$erro = $_SESSION["erro"] ?? "";
+unset($_SESSION["erro"]);
+
 if (!isset($_GET["id_personagem"])) {
-    header("Location: index.php?status=id_vazio");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -13,12 +20,12 @@ $personagem_id = $_GET["id_personagem"];
 $parte_id = $_GET["parte_id"];
 
 if (!$parte_id) {
-    header("Location: index.php");
+    header("Location: index.php?status=erro");
     exit;
 }
 
 if (!filter_var($personagem_id, FILTER_VALIDATE_INT)) {
-    header("Location: index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -48,7 +55,7 @@ $stmt->execute([
 $personagens_partes = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$personagem | !$personagens_partes) {
-    header("Location: ../index.php?status=id_invalido");
+    header("Location: ../index.php?status=erro");
     exit;
 }
 
@@ -107,10 +114,14 @@ if (!$personagem | !$personagens_partes) {
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-white via-purple-50/40 to-white font-sans text-jojo-dark body-stands">
-
     <?php include_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
+        <?php if (!empty($erro)): ?>
+            <div class="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                <?= htmlspecialchars($erro); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
@@ -167,7 +178,10 @@ if (!$personagem | !$personagens_partes) {
 
         <form
             id="form-personagem"
-            action="processar_editar.php"
+            action="processar_editar.php?<?= http_build_query([
+                "id_personagem" => $personagem_id,
+                "parte_id" => $parte_id
+            ]) ?>"
             method="post"
             enctype="multipart/form-data"
             class="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]"

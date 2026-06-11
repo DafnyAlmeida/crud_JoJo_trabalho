@@ -2,8 +2,15 @@
 include_once "../../src/config/conexao.php";
 include_once "../../src/includes/bloqueio.php";
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$erro = $_SESSION["erro"] ?? "";
+unset($_SESSION["erro"]);
+
 if (!isset($_GET["id_stand"])) {
-    header("Location: index.php?status=id_vazio");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -11,7 +18,7 @@ $stand_id = $_GET["id_stand"];
 $parte_id = $_GET["parte_id"] ?? null;
 
 if (!$parte_id || !filter_var($parte_id, FILTER_VALIDATE_INT) || !filter_var($stand_id, FILTER_VALIDATE_INT)) {
-    header("Location: index.php?status=parte_invalida");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -25,7 +32,7 @@ $stmt->execute([
 $stand = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$stand) {
-    header("Location: ../index.php?status=id_invalido");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -39,7 +46,7 @@ $stmt->execute([
 $parte = $stmt->fetch(PDO::FETCH_OBJ);
 
 if (!$parte) {
-    header("Location: ../index.php?status=parte_nao_encontrada");
+    header("Location: index.php?status=erro");
     exit;
 }
 
@@ -132,6 +139,13 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
     <?php include_once "../../src/includes/header.php"; ?>
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
+    <?php if (!empty($erro)): ?>
+        <div class="mb-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-500">
+            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+            <?= htmlspecialchars($erro); ?>
+        </div>
+    <?php endif; ?>
+
         <!-- Caminho da página -->
         <nav class="mb-6 flex flex-wrap items-center gap-4 text-xs md:text-sm">
             <a href="../index.php"
@@ -197,7 +211,7 @@ $habilidades = $stmt->fetchAll(PDO::FETCH_OBJ);
         <!-- Formulário -->
         <form 
             id="form-stand"
-            action="processar_editar.php" 
+            action="processar_editar.php?id_stand=<?= urlencode($stand->id) ?>&parte_id=<?= urlencode((string) $parte_id) ?>" 
             method="post" 
             enctype="multipart/form-data"
             class="grid gap-5 lg:grid-cols-[0.9fr_1.4fr]"

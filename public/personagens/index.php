@@ -7,6 +7,17 @@ require_once "../../src/functions/gerais.php";
 $parte_id = validar_id_get("parte_id");
 $usuario_id = (int) ($_SESSION["usuario_id"] ?? 0);
 
+$msg = "";
+
+if (!empty($_GET["status"])) {
+    $status = $_GET["status"];
+    if ($status == "sucesso") {
+        $msg = "Stand adicionado com sucesso!";
+    } else if ($msg !== null) {
+        $msg = "Status inválido!";
+    }
+}
+
 // Verifica se ambos existem
 if (!$parte_id || !$usuario_id) {
     header("Location: ../index.php?status=parte_invalida");
@@ -135,6 +146,43 @@ $temas = [
     ]
 ];
 
+$alertas = [
+    "adicionado" => [
+        "titulo" => "Sucesso!",
+        "mensagem" => "Personagem adicionado com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-check",
+        "cor" => "[#a874e5]"
+    ],
+
+    "editado" => [
+        "titulo" => "Atualizado!",
+        "mensagem" => "Personagem editado com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-pen",
+        "cor" => "[#a874e5]"
+    ],
+
+    "apagado" => [
+        "titulo" => "Apagado!",
+        "mensagem" => "Personagem apagado com sucesso!",
+        "tipo" => "sucesso",
+        "icone" => "fa-solid fa-trash",
+        "cor" => "[#a874e5]"
+    ],
+
+    "erro" => [
+        "titulo" => "Erro!",
+        "mensagem" => "Ops! Parece que ocorreu um erro.",
+        "tipo" => "erro",
+        "icone" => "fa-solid fa-triangle-exclamation",
+        "cor" => "[#df468d]"
+    ]
+];
+
+$status = $_GET["status"] ?? "";
+$alerta = $alertas[$status] ?? null;
+
 ?>
 
 <!DOCTYPE html>
@@ -221,9 +269,7 @@ $temas = [
 </head>
 
 <body class="flex min-h-screen flex-col bg-jojo-bg font-body text-jojo-dark">
-
     <?php require_once "../../src/includes/header.php"; ?>
-
     <main class="mx-auto w-full max-w-[1450px] px-10 pb-7 pt-6">
 
         <!-- Caminho da página -->
@@ -450,5 +496,40 @@ $temas = [
             </div>
         </footer>
     <?php endif; ?>
+    <?php if ($alerta): ?>
+    <div id="popupMensagem"
+        class="fixed right-4 top-[60px] z-[9999] flex items-center gap-2 rounded-xl border border-<?= $alerta['cor'] ?> bg-white px-4 py-3 shadow-lg transition-all duration-300">
+
+        <div class="flex h-8 w-8 items-center justify-center rounded-full text-sm
+            bg-<?= $alerta['cor'] ?>/30 text-<?= $alerta['cor'] ?>">
+
+            <i class="<?= $alerta['icone'] ?>"></i>
+        </div>
+
+        <div>
+            <p class="text-sm font-bold text-<?= $alerta['cor'] ?>-700">
+                <?= htmlspecialchars($alerta["titulo"]) ?>
+            </p>
+
+            <p class="text-xs text-gray-600">
+                <?= htmlspecialchars($alerta["mensagem"]) ?>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const popup = document.getElementById("popupMensagem");
+
+            if (popup) {
+                popup.classList.add("opacity-0", "translate-x-4");
+
+                setTimeout(() => {
+                    popup.remove();
+                }, 400);
+            }
+        }, 4000);
+    </script>
+<?php endif; ?>
 </body>
 </html>
